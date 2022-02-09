@@ -1,0 +1,33 @@
+
+.errorText {
+  color: #ff4e45;
+  font-size: 12px;
+}
+
+.calcFormRow {
+  display: flex;
+  gap: 15px;
+}
+
+.customLabel {
+  display: block;
+  padding: 0 0 15px;
+  line-height: 1.5715;
+}
+
+.calcFormCol{
+  display: flex;
+  flex-direction: column;
+}
+
+.textAreaError {
+  border-color: #f5222d;
+}
+
+.datePicker {
+  width: 145px;
+}
+
+.sumInput {
+  width: 110px;
+}
