@@ -3,7 +3,10 @@
 enum PathDict {
   root = '/',
   about = '/about',
+<<<<<<< HEAD
   calculators = 'calculators',
+=======
+>>>>>>> origin/development
 }
 
 export default PathDict;

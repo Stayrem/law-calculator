@@ -1,6 +1,9 @@
 /* eslint-disable import/prefer-default-export */
+<<<<<<< HEAD
 import dayjs from 'dayjs';
 
+=======
+>>>>>>> origin/development
 const toCamel = (s) => s.replace(/([-_][a-z])/ig, ($1) => $1.toUpperCase()
   .replace('-', '')
   .replace('_', ''));
@@ -25,5 +28,8 @@ export const keysToCamel = (o) => {
 
   return o;
 };
+<<<<<<< HEAD
 
 export const disabledDate = (current) => current && current > dayjs(new Date());
+=======
+>>>>>>> origin/development

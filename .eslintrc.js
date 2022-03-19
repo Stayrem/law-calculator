@@ -30,7 +30,10 @@ module.exports = {
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'no-use-before-define': 'off',
     'react/function-component-definition': 'off',
+<<<<<<< HEAD
     'react/jsx-props-no-spreading': 'off',
+=======
+>>>>>>> origin/development
     '@typescript-eslint/no-use-before-define': ['error'],
     'import/extensions': [
       'error',
