@@ -5,10 +5,7 @@ const MiniCss = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-<<<<<<< HEAD
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
-=======
->>>>>>> origin/development
 
 const nodeEnv = process.env.NODE_ENV;
 const isDevelopment = nodeEnv === 'dev';
@@ -19,18 +16,9 @@ module.exports = {
   mode: isDevelopment ? 'development' : 'production',
   entry: path.resolve(__dirname, './src/index.js'),
   resolve: {
-<<<<<<< HEAD
     extensions: ['.ts', '.js', '.jsx', '.tsx', '.scss', 'svg', 'png', 'jpg', 'jpeg'],
   },
   devServer: {
-    client: {
-      overlay: false,
-    },
-=======
-    extensions: ['.ts', '.js', '.jsx', '.tsx', '.scss'],
-  },
-  devServer: {
->>>>>>> origin/development
     historyApiFallback: true,
     compress: true,
     port: 9000,
@@ -44,14 +32,11 @@ module.exports = {
   module: {
     rules: [
       {
-<<<<<<< HEAD
-        test: /\.(svg|jp?eg|png)$/,
-        exclude: /node_modules/,
-        loader: 'file-loader',
+        test: /\.(png|jpg|gif|svg)$/i,
+        type: 'asset/resource',
+
       },
       {
-=======
->>>>>>> origin/development
         test: /\.(js|jsx|tsx|ts)$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
@@ -83,13 +68,10 @@ module.exports = {
           'sass-loader',
         ],
       },
-<<<<<<< HEAD
-=======
       {
         test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
         type: 'asset/resource',
       },
->>>>>>> origin/development
     ],
   },
   optimization: {
@@ -107,10 +89,7 @@ module.exports = {
     ],
   },
   plugins: [
-<<<<<<< HEAD
     new AntdDayjsWebpackPlugin(),
-=======
->>>>>>> origin/development
     new HtmlWebpackPlugin({
       title: 'Web App',
       template: path.resolve(__dirname, './src/template/index.html'),

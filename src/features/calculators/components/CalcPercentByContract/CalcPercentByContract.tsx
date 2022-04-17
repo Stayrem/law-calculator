@@ -37,7 +37,6 @@ const CalcPercentByContract = (props: ReturnType<typeof useCalcPercentByContract
     },
   } = props;
   const [form] = Form.useForm();
-  window.test = form;
   return (
     <Form form={form} layout="vertical" requiredMark={false} onFinish={(data) => console.log(data)}>
       <div className={css.calcFormRow}>
