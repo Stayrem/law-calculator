@@ -3,7 +3,6 @@ import AppPaths from './pathDict';
 import Main from '../pages/Main/Main';
 import About from '../pages/About/About';
 import Calculators from '../pages/Calculators/Calculators';
-import { calculatorsDict } from '../constants';
 
 const routes: Array<{
   path: string;
@@ -11,17 +10,20 @@ const routes: Array<{
   state?: string;
 }> = [
   {
-    path: AppPaths.root,
+    path: AppPaths.root.pathname,
     component: Main,
   },
   {
-    path: AppPaths.about,
+    path: AppPaths.about.pathname,
     component: About,
   },
   {
-    path: `${AppPaths.calculators}/:calcId`,
+    path: `${AppPaths.calculators.pathname}`,
     component: Calculators,
-    state: calculatorsDict.percentsByContract,
+  },
+  {
+    path: `${AppPaths.calculators.pathname}/:calcId`,
+    component: Calculators,
   },
 ];
 

@@ -5,7 +5,6 @@ import {
 import { ImportOutlined } from '@ant-design/icons';
 import debitImportExample from '../../common/img/debit-import.png';
 import creditImportExample from '../../common/img/credit-import.png';
-import debitCreditImportExample from '../../common/img/debet-credit-import.png';
 import css from './ImportFromTableModal.scss';
 import commonCss from '../../common/css/style.scss';
 import { parseTableData } from './utils';
@@ -14,20 +13,23 @@ import { IFieldItem } from '../../features/calculators/components/CalcPercentByC
 const exampleImportDict = {
   debit: debitImportExample,
   credit: creditImportExample,
-  debitCredit: debitCreditImportExample,
 };
 
 interface IImportFromTableModal {
   // eslint-disable-next-line no-unused-vars
-  onSuccess: (payload: IFieldItem[]) => void
+  onSuccess: (payload: { [key: string]:IFieldItem[] }) => void;
+  debitLabel: string;
+  creditLabel: string;
 }
 
-const DEFAULT_RADIO_CHECKED = 'debit';
+type RadioValues = 'debit' | 'credit';
+
+const DEFAULT_RADIO_CHECKED: RadioValues = 'debit';
 
 interface IState {
   isModalVisible: boolean,
   isStrValid: boolean,
-  checkedRadio: string,
+  checkedRadio: RadioValues,
 }
 
 const initialState: IState = {
@@ -42,7 +44,7 @@ const PLACEHOLDER = `22.05.2021 1024
 const { TextArea } = Input;
 const ImportFromTableModal:React.FC<IImportFromTableModal> = (props) => {
   const textAreaRef = useRef(null);
-  const { onSuccess } = props;
+  const { onSuccess, debitLabel, creditLabel } = props;
   const [state, setState] = useState(initialState);
 
   const SetModalVisibility = (isVisible: boolean) => setState((prevState) => (
@@ -62,7 +64,7 @@ const ImportFromTableModal:React.FC<IImportFromTableModal> = (props) => {
       const textAreaValue = getTextAreaValue();
       if (textAreaValue.length) {
         const result = parseTableData(textAreaValue);
-        onSuccess(result);
+        onSuccess({ [state.checkedRadio]: result });
       }
       SetModalVisibility(false);
     } catch (err) {
@@ -76,7 +78,7 @@ const ImportFromTableModal:React.FC<IImportFromTableModal> = (props) => {
 
   return (
     <>
-      <Button type="primary" onClick={() => SetModalVisibility(true)}>
+      <Button className={css.importButton} type="primary" onClick={() => SetModalVisibility(true)}>
         <ImportOutlined />
         Импорт
       </Button>
@@ -92,9 +94,8 @@ const ImportFromTableModal:React.FC<IImportFromTableModal> = (props) => {
           defaultValue={DEFAULT_RADIO_CHECKED}
           className={css.radio}
         >
-          <Radio.Button value="debit">Дебет</Radio.Button>
-          <Radio.Button value="credit">Кредит</Radio.Button>
-          <Radio.Button value="debitCredit">Дебет/Кредит</Radio.Button>
+          <Radio.Button value="debit">{debitLabel}</Radio.Button>
+          <Radio.Button value="credit">{creditLabel}</Radio.Button>
         </Radio.Group>
         <div className={css.container}>
           <TextArea

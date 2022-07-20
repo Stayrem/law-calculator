@@ -11,11 +11,6 @@ const WithPageContent = (props: IPageContent) => {
   const { children } = props;
   return (
     <Content className={css.content}>
-      <Breadcrumb className={css.breadcrumbs}>
-        <Breadcrumb.Item>Home</Breadcrumb.Item>
-        <Breadcrumb.Item>List</Breadcrumb.Item>
-        <Breadcrumb.Item>App</Breadcrumb.Item>
-      </Breadcrumb>
       {children}
     </Content>
   );

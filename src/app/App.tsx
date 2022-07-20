@@ -7,13 +7,15 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
+  Navigate,
 } from 'react-router-dom';
 import WithPageContent from '../hocs/WithPageContent/WithPageContent';
 import Header from '../layout/Header/Header';
 import Footer from '../layout/Footer/Footer';
 import routes from './routes';
 import css from './App.scss';
+import Navigation from '../layout/Navigation/Navigation';
+import pathDict from './pathDict';
 
 dayjs.locale('ru');
 
@@ -23,24 +25,33 @@ function App() {
       <ConfigProvider locale={locale}>
         <div className={css.content}>
           <Header />
-          <Routes>
-            {routes.map((route) => {
-              const { path, component } = route;
-              const Component = component;
-              return (
+          <div className={css.inner}>
+            <Navigation />
+            <div className={css.routeContent}>
+              <Routes>
+                {routes.map((route) => {
+                  const { path, component } = route;
+                  const Component = component;
+                  return (
+                    <Route
+                      key={path}
+                      path={path}
+                      element={(
+                        <WithPageContent>
+                          <Component />
+                        </WithPageContent>
+                      )}
+                    />
+                  );
+                })}
                 <Route
-                  key={path}
-                  path={path}
-                  element={(
-                    <WithPageContent>
-                      <Component />
-                    </WithPageContent>
-              )}
+                  path="*"
+                  element={<Navigate to={pathDict.root.pathname} replace />}
                 />
-              );
-            })}
-          </Routes>
-          <Footer />
+              </Routes>
+              <Footer />
+            </div>
+          </div>
         </div>
       </ConfigProvider>
     </Router>

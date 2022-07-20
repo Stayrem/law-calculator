@@ -31,6 +31,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'react/function-component-definition': 'off',
     'react/jsx-props-no-spreading': 'off',
+    'react/require-default-props': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
     'import/extensions': [
       'error',
