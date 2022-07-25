@@ -1,0 +1,18 @@
+.formRow {
+  display: flex;
+}
+
+.dynamicTableRow {
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+}
+
+.submitButton {
+  margin-top: 15px;
+}

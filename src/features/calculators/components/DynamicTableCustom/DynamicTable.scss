@@ -1,0 +1,18 @@
+.wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.sample {
+  align-self: flex-start;
+}
+
+.dynamicTableLabel {
+  position: relative;
+}
+
+.importButton {
+  position: absolute;
+  right: -40px;
+  top: 0;
+}

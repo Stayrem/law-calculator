@@ -1,0 +1,55 @@
+.errorText {
+  color: #ff4e45;
+  font-size: 12px;
+}
+
+.calcFormRow {
+  display: flex;
+  gap: 15px;
+}
+
+.addDynamicBtn {
+  width: 285px;
+}
+
+.customLabel {
+  display: block;
+  padding: 0 0 15px;
+  line-height: 1.5715;
+}
+
+.calcFormCol{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.textAreaError {
+  border-color: #f5222d;
+}
+
+.datePicker {
+  width: 145px;
+}
+
+.sumInput {
+  width: 110px;
+}
+.errorText {
+  color: #ff4e45;
+  font-size: 12px;
+}
+
+.dynamicFormItem {
+  position: relative;
+  display: flex;
+  gap: 8px;
+}
+
+.iconWrapper {
+  margin-top: 5px;
+}
+
+:global(.first).iconWrapper {
+  margin-top: 35px;
+}
