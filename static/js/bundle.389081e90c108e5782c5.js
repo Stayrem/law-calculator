@@ -1424,7 +1424,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 var axiosInstance = axios_default().create({
-  baseURL: "MISSING_ENV_VAR".HOST
+  baseURL: process.env.HOST
 });
 axiosInstance.interceptors.request.use(function (config) {
   return _objectSpread(_objectSpread({}, config), {}, {
@@ -1936,4 +1936,4 @@ module.exports = __webpack_require__.p + "c22782c229144a07982e.svg";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=bundle.cd4925b63d0abb573d7a.js.map
+//# sourceMappingURL=bundle.389081e90c108e5782c5.js.map

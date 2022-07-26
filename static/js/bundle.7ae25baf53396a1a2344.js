@@ -35786,7 +35786,7 @@ function _wrapNativeSuper(Class) {
 var formatRegExp = /%[sdj%]/g;
 var dist_web_warning = function warning() {}; // don't print warning message when in production env or node runtime
 
-if (typeof process !== 'undefined' && "MISSING_ENV_VAR" && "production" !== 'production' && 0 && 0) {}
+if (typeof process !== 'undefined' && process.env && "production" !== 'production' && 0 && 0) {}
 
 function convertFieldsError(errors) {
   if (!errors || !errors.length) return null;
@@ -56971,4 +56971,4 @@ function useForm(props = {}) {
 /***/ })
 
 }]);
-//# sourceMappingURL=bundle.99790f60c52e85aa2b63.js.map
+//# sourceMappingURL=bundle.7ae25baf53396a1a2344.js.map
