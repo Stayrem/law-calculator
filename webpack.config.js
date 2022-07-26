@@ -4,13 +4,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCss = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 
 const nodeEnv = process.env.NODE_ENV;
 const isDevelopment = nodeEnv === 'dev';
 const isHome = nodeEnv === 'home';
-const dotEnvFile = isHome ? path.join(__dirname, '.env.home') : path.join(__dirname, '.env.amazon');
 
 module.exports = {
   mode: isDevelopment ? 'development' : 'production',
@@ -98,11 +96,6 @@ module.exports = {
     new CleanWebpackPlugin(),
     new MiniCss({
       filename: 'static/css/style.[contenthash].css',
-    }),
-    new Dotenv({
-      path: dotEnvFile,
-      safe: false,
-      allowEmptyValues: true,
     }),
     new CopyPlugin({
       patterns: [
