@@ -5,8 +5,7 @@
   "basename": "/app",
   "scripts": {
     "start": "NODE_ENV=dev webpack serve --config webpack.config.js",
-    "build-home": "NODE_ENV=home webpack --config webpack.config.js",
-    "build-amazon": "NODE_ENV=amazon webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js"
   },
   "main": "./src/indes.js",
   "devDependencies": {
