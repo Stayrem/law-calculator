@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7269:
+/***/ 2921:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 
@@ -276,30 +276,126 @@ var pathDict = {
 var typography = __webpack_require__(7009);
 // EXTERNAL MODULE: ./node_modules/antd/es/breadcrumb/index.js + 5 modules
 var breadcrumb = __webpack_require__(2498);
+// EXTERNAL MODULE: ./node_modules/antd/es/row/index.js + 3 modules
+var row = __webpack_require__(2161);
+// EXTERNAL MODULE: ./node_modules/antd/es/col/index.js + 1 modules
+var col = __webpack_require__(1635);
+// EXTERNAL MODULE: ./src/pages/Main/img/home.svg
+var home = __webpack_require__(168);
+// EXTERNAL MODULE: ./src/pages/Main/img/home2.svg
+var home2 = __webpack_require__(2514);
+// EXTERNAL MODULE: ./src/pages/Main/img/target.png
+var target = __webpack_require__(8377);
+// EXTERNAL MODULE: ./src/pages/Main/img/checked.png
+var checked = __webpack_require__(8884);
+// EXTERNAL MODULE: ./src/pages/Main/img/document.png
+var img_document = __webpack_require__(1186);
+// EXTERNAL MODULE: ./src/pages/Main/img/shield.png
+var shield = __webpack_require__(8542);
+;// CONCATENATED MODULE: ./src/pages/Main/Main.scss
+// extracted by mini-css-extract-plugin
+/* harmony default export */ const Main_Main = ({"section":"x7Z8tTAuieCUQsoV9vGK","textSubsectionLeft":"li0c74PCHapdrvbgTfhT","sectionImage":"XgRSRpCB5RgKdZNaSQtw","textSubsectionRight":"LPZvUzJwP_FBSjt4GoUH","textWhite":"wddk9kxYBmH6GHWxiopF","sectionBlue":"XXYymz8UI_s84uEfZh8o","advantagesItem":"MSs_7w43yBFmaIysnX4X","advantagesTitle":"V4_jLhYJyDu4y07AmbrW","advantagesText":"POBpvRH82LOfvT68kr7V","sectionImageWrapper":"sf0NRoNQNyMiucnHioxB","toCalcWrapper":"lBYpFKBIfc4EQhv0L3KE"});
 ;// CONCATENATED MODULE: ./src/pages/Main/Main.tsx
+
+
+
+
+
+
+
+
+
 
 
 var Title = typography/* default.Title */.Z.Title,
     Paragraph = typography/* default.Paragraph */.Z.Paragraph,
     Text = typography/* default.Text */.Z.Text;
+var advantagesList = [{
+  imagePath: target,
+  title: 'Точность расчётов',
+  text: 'Программный расчёт исключает ошибки, связанные с человеческим фактором'
+}, {
+  imagePath: img_document,
+  title: 'Документ готов для суда',
+  text: 'Вам останется только указать реквизиты сторон и судебного дела'
+}, {
+  imagePath: shield,
+  title: 'Сохранение данных расчёта',
+  text: 'Вы сможете вернуться к расчёту в любое время или пересчитать неустойку после претензии для подготовки иска'
+}, {
+  imagePath: checked,
+  title: 'Актуальность данных',
+  text: 'Данные о ставце ЦБ РФ и иные, которые важны для расчёта регулярно обновляются и всегда будут актуальны'
+}];
 
 var Main = function Main() {
+  var navigate = (0,react_router/* useNavigate */.s0)();
+
+  var calcsNavitageHandler = function calcsNavitageHandler() {
+    return navigate(app_pathDict.calculators);
+  };
+
   return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement(breadcrumb/* default */.Z, {
     style: {
       padding: '16px 0'
     }
-  }, /*#__PURE__*/react.createElement(breadcrumb/* default.Item */.Z.Item, null, "\u0413\u043B\u0430\u0432\u043D\u0430\u044F")), /*#__PURE__*/react.createElement(typography/* default */.Z, null, /*#__PURE__*/react.createElement(Title, null, "Introduction"), /*#__PURE__*/react.createElement(Paragraph, null, "In the process of internal desktop applications development, many different design specs and implementations would be involved, which might cause designers and developers difficulties and duplication and reduce the efficiency of development."), /*#__PURE__*/react.createElement(Paragraph, null, "After massive project practice and summaries, Ant Design, a design language for background applications, is refined by Ant UED Team, which aims to", ' ', /*#__PURE__*/react.createElement(Text, {
-    strong: true
-  }, "uniform the user interface specs for internal background projects, lower the unnecessary cost of design differences and implementation and liberate the resources of design and front-end development"), "."), /*#__PURE__*/react.createElement(Title, {
-    level: 2
-  }, "Guidelines and Resources"), /*#__PURE__*/react.createElement(Paragraph, null, "We supply a series of design principles, practical patterns and high quality design resources (", /*#__PURE__*/react.createElement(Text, {
-    code: true
-  }, "Sketch"), ' ', "and", ' ', /*#__PURE__*/react.createElement(Text, {
-    code: true
-  }, "Axure"), "), to help people create their product prototypes beautifully and efficiently.")));
+  }, /*#__PURE__*/react.createElement(breadcrumb/* default.Item */.Z.Item, null, "\u0413\u043B\u0430\u0432\u043D\u0430\u044F")), /*#__PURE__*/react.createElement(row/* default */.Z, {
+    className: Main_Main.section
+  }, /*#__PURE__*/react.createElement(col/* default */.Z, {
+    lg: 12,
+    className: Main_Main.textSubsectionLeft
+  }, /*#__PURE__*/react.createElement(typography/* default */.Z, null, /*#__PURE__*/react.createElement(Title, {
+    level: 3
+  }, "\u042E\u0440\u0438\u0434\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440\u044B"), /*#__PURE__*/react.createElement(Paragraph, null, "\u041F\u0440\u043E\u0435\u043A\u0442 \u0441\u043E\u0437\u0434\u0430\u043D \u043F\u0440\u0430\u043A\u0442\u0438\u043A\u0443\u044E\u0449\u0438\u043C\u0438 \u044E\u0440\u0438\u0441\u0442\u0430\u043C\u0438", ' ', /*#__PURE__*/react.createElement("br", null), ' ', "(\u043D\u0435 \u0431\u0435\u0437 \u043F\u043E\u043C\u043E\u0449\u0438 \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0438\u0441\u0442\u043E\u0432) \u0434\u043B\u044F \u0434\u0440\u0443\u0433\u0438\u0445 \u044E\u0440\u0438\u0441\u0442\u043E\u0432 \u0438 \u0432\u0441\u0435\u0445 \u0442\u0435\u0445, \u043A\u043E\u043C\u0443 \u043D\u0443\u0436\u043D\u043E \u043F\u043E\u0441\u0447\u0438\u0442\u0430\u0442\u044C \u0447\u0442\u043E-\u0442\u043E \u0434\u043B\u044F \u043F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0438 \u043F\u0440\u0435\u0442\u0435\u043D\u0437\u0438\u0438, \u0438\u0441\u043A\u043E\u0432\u043E\u0433\u043E \u0437\u0430\u044F\u0432\u043B\u0435\u043D\u0438\u044F \u0438 \u0432 \u0438\u043D\u044B\u0445 \u0441\u043B\u0443\u0447\u0430\u044F\u0445"), /*#__PURE__*/react.createElement("div", {
+    className: Main_Main.toCalcWrapper
+  }, /*#__PURE__*/react.createElement(es_button/* default */.Z, {
+    onClick: calcsNavitageHandler,
+    size: "large",
+    shape: "round",
+    type: "primary"
+  }, "\u041F\u0435\u0440\u0435\u0439\u0442\u0438 \u043A \u041A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440\u0430\u043C")))), /*#__PURE__*/react.createElement(col/* default */.Z, {
+    className: Main_Main.sectionImageWrapper,
+    lg: 12
+  }, /*#__PURE__*/react.createElement("img", {
+    className: Main_Main.sectionImage,
+    width: "400",
+    src: home,
+    alt: "justice"
+  }))), /*#__PURE__*/react.createElement(row/* default */.Z, {
+    className: "".concat(Main_Main.section, " ").concat(Main_Main.sectionBlue)
+  }, /*#__PURE__*/react.createElement(col/* default */.Z, {
+    lg: 12,
+    className: Main_Main.sectionImageWrapper
+  }, /*#__PURE__*/react.createElement("img", {
+    className: Main_Main.sectionImage,
+    width: "200",
+    src: home2,
+    alt: "justice"
+  })), /*#__PURE__*/react.createElement(col/* default */.Z, {
+    lg: 12,
+    className: Main_Main.textSubsectionRight
+  }, /*#__PURE__*/react.createElement(typography/* default */.Z, null, /*#__PURE__*/react.createElement(Paragraph, {
+    className: Main_Main.textWhite
+  }, "\u041D\u0430\u0448 \u0441\u0435\u0440\u0432\u0438\u0441 \u043F\u0440\u0435\u0434\u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D \u0434\u043B\u044F \u044E\u0440\u0438\u0441\u0442\u043E\u0432, \u044D\u043A\u0441\u043F\u0435\u0440\u0442\u043E\u0432 \u0438 \u043E\u0431\u044B\u0447\u043D\u044B\u0445 \u0433\u0440\u0430\u0436\u0434\u0430\u043D, \u043F\u0440\u0438\u0437\u0432\u0430\u043D \u0443\u0441\u0442\u0440\u0430\u043D\u0438\u0442\u044C \u0433\u043E\u043B\u043E\u0432\u043D\u0443\u044E \u0431\u043E\u043B\u044C, \u0432\u043E\u0437\u043D\u0438\u043A\u0430\u044E\u0449\u0443\u044E \u0443 \u044E\u0440\u0438\u0441\u0442\u043E\u0432 \u0432 \u0441\u0435\u0433\u043E\u0434\u043D\u044F\u0448\u043D\u0438\u0445 \u0443\u0441\u043B\u043E\u0432\u0438\u044F\u0445 \u0434\u0435\u0444\u0438\u0446\u0438\u0442\u0430 \u0432\u0440\u0435\u043C\u0435\u043D\u0438 \u043F\u0440\u0438 \u043E\u0441\u0443\u0449\u0435\u0441\u0442\u0432\u043B\u0435\u043D\u0438\u0438 \u0441\u043B\u043E\u0436\u043D\u044B\u0445 \u0440\u0430\u0441\u0447\u0451\u0442\u043E\u0432 \u0431\u0435\u0437 \u043F\u043E\u0442\u0435\u0440\u0438 \u043A\u0430\u0447\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u0430 \u0438 \u043F\u043E\u043F\u0440\u0430\u0432\u043E\u043A \u043D\u0430 \u0447\u0435\u043B\u043E\u0432\u0435\u0447\u0435\u0441\u043A\u0438\u0439 \u0444\u0430\u043A\u0442\u043E\u0440. \u041F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u043D\u043E\u0435 \u043E\u0431\u0435\u0441\u043F\u0435\u0447\u0435\u043D\u0438\u0435 \u043D\u0430\u043F\u0438\u0441\u0430\u043D\u043E \u043A\u043E\u043C\u0430\u043D\u0434\u043E\u0439 \u043F\u0440\u043E\u0444\u0435\u0441\u0441\u0438\u043E\u043D\u0430\u043B\u043E\u0432, \u0438\u043C\u0435\u044E\u0449\u0438\u0445 \u0431\u043E\u043B\u044C\u0448\u043E\u0439 \u043E\u043F\u044B\u0442 \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u043A\u0438 \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u043D\u043E\u0433\u043E \u043E\u0431\u0435\u0441\u043F\u0435\u0447\u0435\u043D\u0438\u044F \u0438 \u0432\u0435\u0434\u0435\u043D\u0438\u044F \u0441\u0443\u0434\u0435\u0431\u043D\u044B\u0445 \u043F\u0440\u043E\u0446\u0435\u0441\u0441\u043E\u0432.")))), /*#__PURE__*/react.createElement(row/* default */.Z, {
+    className: Main_Main.section
+  }, advantagesList.map(function (it) {
+    return /*#__PURE__*/react.createElement(col/* default */.Z, {
+      xs: 12,
+      lg: 6,
+      className: Main_Main.advantagesItem
+    }, /*#__PURE__*/react.createElement(Text, {
+      className: Main_Main.advantagesTitle
+    }, it.title), /*#__PURE__*/react.createElement("img", {
+      width: "100",
+      src: it.imagePath,
+      alt: it.title
+    }), /*#__PURE__*/react.createElement(Text, {
+      className: Main_Main.advantagesText
+    }, it.text));
+  })));
 };
 
-/* harmony default export */ const Main_Main = (Main);
+/* harmony default export */ const pages_Main_Main = (Main);
 ;// CONCATENATED MODULE: ./src/pages/About/About.tsx
 
 
@@ -1119,10 +1215,6 @@ var LoadingStatus;
   LoadingStatus["FINISHED"] = "Finished";
   LoadingStatus["ERROR"] = "ERROR";
 })(LoadingStatus || (LoadingStatus = {}));
-// EXTERNAL MODULE: ./node_modules/antd/es/row/index.js + 3 modules
-var row = __webpack_require__(2161);
-// EXTERNAL MODULE: ./node_modules/antd/es/col/index.js + 1 modules
-var col = __webpack_require__(1635);
 // EXTERNAL MODULE: ./node_modules/antd/es/card/index.js + 33 modules
 var card = __webpack_require__(6343);
 ;// CONCATENATED MODULE: ./src/features/calculators/components/CalculatorsList/CalculatorsList.scss
@@ -1199,7 +1291,7 @@ var Calculators = function Calculators() {
 
 var routes = [{
   path: app_pathDict.root.pathname,
-  component: Main_Main
+  component: pages_Main_Main
 }, {
   path: app_pathDict.about.pathname,
   component: About_About
@@ -1424,7 +1516,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 var axiosInstance = axios_default().create({
-  baseURL: process.env.HOST
+  baseURL: '/'
 });
 axiosInstance.interceptors.request.use(function (config) {
   return _objectSpread(_objectSpread({}, config), {}, {
@@ -1709,6 +1801,48 @@ module.exports = __webpack_require__.p + "88279c0e2c94e93237eb.svg";
 
 module.exports = __webpack_require__.p + "c22782c229144a07982e.svg";
 
+/***/ }),
+
+/***/ 8884:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "1cb86fef89d82949f242.png";
+
+/***/ }),
+
+/***/ 1186:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "a2bc2858511c795849da.png";
+
+/***/ }),
+
+/***/ 168:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "bb53996d423fa2a11538.svg";
+
+/***/ }),
+
+/***/ 2514:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "934f46215e3d6cdbdd3a.svg";
+
+/***/ }),
+
+/***/ 8542:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "bc7bac93fe9fb46f0ba8.png";
+
+/***/ }),
+
+/***/ 8377:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "b9e784bf9f6f64f6eb25.png";
+
 /***/ })
 
 /******/ 	});
@@ -1931,9 +2065,9 @@ module.exports = __webpack_require__.p + "c22782c229144a07982e.svg";
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
 /******/ 	__webpack_require__.O(undefined, [987], () => (__webpack_require__(1008)))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, [987], () => (__webpack_require__(7269)))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, [987], () => (__webpack_require__(2921)))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=bundle.389081e90c108e5782c5.js.map
+//# sourceMappingURL=bundle.b85eb081da8745c5bc85.js.map
