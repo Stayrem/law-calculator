@@ -8,7 +8,7 @@ import pathDict from '../app/pathDict';
 import { IUserRequest } from '../features/user/userSlice';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.HOST,
+  baseURL: '/',
 });
 
 axiosInstance.interceptors.request.use((config) => ({ ...config, headers: { authorization: `Bearer ${getAccessToken()}` } }), (error) => Promise.reject(error));
