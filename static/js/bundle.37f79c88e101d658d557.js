@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 2921:
+/***/ 2981:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 
@@ -60,8 +60,8 @@ var logo_white = __webpack_require__(5611);
 var index_esm = __webpack_require__(7536);
 // EXTERNAL MODULE: ./node_modules/antd/es/button/index.js
 var es_button = __webpack_require__(1577);
-// EXTERNAL MODULE: ./node_modules/antd/es/modal/index.js + 22 modules
-var modal = __webpack_require__(2214);
+// EXTERNAL MODULE: ./node_modules/antd/es/modal/index.js + 21 modules
+var modal = __webpack_require__(2592);
 // EXTERNAL MODULE: ./node_modules/antd/es/input/index.js + 7 modules
 var input = __webpack_require__(5019);
 // EXTERNAL MODULE: ./node_modules/antd/es/divider/index.js
@@ -269,15 +269,18 @@ var pathDict = {
     return {
       pathname: "/calculators/".concat(calcId)
     };
+  },
+  account: {
+    pathname: '/account'
   }
 };
 /* harmony default export */ const app_pathDict = (pathDict);
-// EXTERNAL MODULE: ./node_modules/antd/es/typography/index.js + 19 modules
-var typography = __webpack_require__(7009);
-// EXTERNAL MODULE: ./node_modules/antd/es/breadcrumb/index.js + 5 modules
-var breadcrumb = __webpack_require__(2498);
-// EXTERNAL MODULE: ./node_modules/antd/es/row/index.js + 3 modules
-var row = __webpack_require__(2161);
+// EXTERNAL MODULE: ./node_modules/antd/es/typography/index.js + 18 modules
+var typography = __webpack_require__(6170);
+// EXTERNAL MODULE: ./node_modules/antd/es/breadcrumb/index.js + 3 modules
+var breadcrumb = __webpack_require__(5247);
+// EXTERNAL MODULE: ./node_modules/antd/es/row/index.js + 2 modules
+var row = __webpack_require__(4818);
 // EXTERNAL MODULE: ./node_modules/antd/es/col/index.js + 1 modules
 var col = __webpack_require__(1635);
 // EXTERNAL MODULE: ./src/pages/Main/img/home.svg
@@ -637,8 +640,8 @@ var CalcBy365View = function CalcBy365View(props) {
   var behavior = useCalcBy395();
   return /*#__PURE__*/react.createElement(CalcBy365View, behavior);
 });
-// EXTERNAL MODULE: ./node_modules/antd/es/select/index.js + 49 modules
-var es_select = __webpack_require__(820);
+// EXTERNAL MODULE: ./node_modules/antd/es/select/index.js + 30 modules
+var es_select = __webpack_require__(2239);
 ;// CONCATENATED MODULE: ./src/features/calculators/components/CalculatorsForms/CalcBy317/CalcBy317.module.scss
 // extracted by mini-css-extract-plugin
 /* harmony default export */ const CalcBy317_module = ({"formRow":"Vol0rIiHbz0mqtrRRh0w","dynamicTableRow":"MltrS_vJuWG8c8Nx_jFt","submitButton":"XLzRVc8IfnzzqTUF7ngF"});
@@ -1284,7 +1287,81 @@ var Calculators = function Calculators() {
 };
 
 /* harmony default export */ const Calculators_Calculators = (Calculators);
+// EXTERNAL MODULE: ./node_modules/antd/es/table/index.js + 124 modules
+var table = __webpack_require__(4223);
+// EXTERNAL MODULE: ./node_modules/@ant-design/icons/es/icons/FilePdfOutlined.js + 1 modules
+var FilePdfOutlined = __webpack_require__(6755);
+// EXTERNAL MODULE: ./node_modules/@ant-design/icons/es/icons/FileWordOutlined.js + 1 modules
+var FileWordOutlined = __webpack_require__(473);
+;// CONCATENATED MODULE: ./src/pages/Account/Account.scss
+// extracted by mini-css-extract-plugin
+/* harmony default export */ const Account = ({"actions":"Oxbfd8Z0xs33PZq_wdHt"});
+;// CONCATENATED MODULE: ./src/pages/Account/Account.tsx
+
+
+
+
+
+var dataSource = [{
+  key: '1',
+  calculator: 'Расчёт неустойки по 1/300, 1/150 или 1/130 от ключевой ставки ЦБ РФ',
+  date: 1659537717
+}, {
+  key: '2',
+  calculator: 'Расчёт процентов задолженности по ст. 317.1 ГК РФ',
+  date: 1659534717
+}];
+var columns = [{
+  title: 'Калькулятор',
+  dataIndex: 'calculator',
+  key: 'calculator'
+}, {
+  title: 'Дата',
+  dataIndex: 'date',
+  key: 'date',
+  render: function render(date) {
+    return dayjs_min_default().unix(date).format('DD.MM.YYYY');
+  }
+}, {
+  title: '',
+  dataIndex: 'actions',
+  key: 'actions',
+  render: function render() {
+    return /*#__PURE__*/react.createElement("div", {
+      className: Account.actions
+    }, /*#__PURE__*/react.createElement(es_button/* default */.Z, {
+      type: "text",
+      icon: /*#__PURE__*/react.createElement(FilePdfOutlined/* default */.Z, {
+        style: {
+          fontSize: '20px'
+        }
+      })
+    }), /*#__PURE__*/react.createElement(es_button/* default */.Z, {
+      type: "text",
+      icon: /*#__PURE__*/react.createElement(FileWordOutlined/* default */.Z, {
+        style: {
+          fontSize: '20px'
+        }
+      })
+    }));
+  }
+}];
+
+var Account_Account = function Account() {
+  var a = 1;
+  return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement(breadcrumb/* default */.Z, {
+    style: {
+      padding: '16px 0'
+    }
+  }, /*#__PURE__*/react.createElement(breadcrumb/* default.Item */.Z.Item, null, "\u041B\u0438\u0447\u043D\u044B\u0439 \u041A\u0430\u0431\u0438\u043D\u0435\u0442")), /*#__PURE__*/react.createElement(table/* default */.Z, {
+    dataSource: dataSource,
+    columns: columns
+  }));
+};
+
+/* harmony default export */ const pages_Account_Account = (Account_Account);
 ;// CONCATENATED MODULE: ./src/app/routes.ts
+
 
 
 
@@ -1301,6 +1378,9 @@ var routes = [{
 }, {
   path: "".concat(app_pathDict.calculators.pathname, "/:calcId"),
   component: Calculators_Calculators
+}, {
+  path: "".concat(app_pathDict.account.pathname),
+  component: pages_Account_Account
 }];
 /* harmony default export */ const app_routes = (routes);
 ;// CONCATENATED MODULE: ./src/app/App.scss
@@ -2065,9 +2145,9 @@ module.exports = __webpack_require__.p + "b9e784bf9f6f64f6eb25.png";
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
 /******/ 	__webpack_require__.O(undefined, [987], () => (__webpack_require__(1008)))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, [987], () => (__webpack_require__(2921)))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, [987], () => (__webpack_require__(2981)))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=bundle.b85eb081da8745c5bc85.js.map
+//# sourceMappingURL=bundle.37f79c88e101d658d557.js.map
