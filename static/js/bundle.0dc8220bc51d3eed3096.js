@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 2981:
+/***/ 5226:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 
@@ -423,6 +423,8 @@ var About = function About() {
 };
 
 /* harmony default export */ const About_About = (About);
+// EXTERNAL MODULE: ./node_modules/antd/es/collapse/index.js + 6 modules
+var collapse = __webpack_require__(7279);
 // EXTERNAL MODULE: ./node_modules/antd/es/date-picker/index.js + 59 modules
 var date_picker = __webpack_require__(1505);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules
@@ -1209,6 +1211,21 @@ var calcConfigs = {
     component: CalcPenaltyByContract
   }
 };
+var calcQuestions = {
+  calc395: [{
+    title: 'Что можно рассчитать при помощи данного калькулятора?',
+    description: 'Если между вами и иным лицом существует (существовало) какое-либо обязательство и это лицо удерживает у себя денежные средства, не возвращает их или допустило иную просрочку, то вы имеете право требовать уплаты процентов. При помощи данного калькулятора рассчитываются проценты на основании статьи 395 ГК РФ, то есть когда другой порядок не установлен ни законом (например, иной установлен законодательством о защите прав потребителей, трудовым кодексом и в ряде иных случаев), ни договором (обычно речь идёт о неустойке). исключение '
+  }, {
+    title: 'Сумму долга нужно указывать с НДС или без НДС?',
+    description: 'Сперва простой ответ - сумму нужно указывать с НДС. Теперь обоснование для тех, кому оно необходимо. В судебной практике не сразу сформировался единообразный подход. В пункте 10 информационного письма Президиума ВАС РФ от 10.12.1996 N 9 “Обзор судебной практики применения законодательства о налоге на добавленную стоимость” было указано, что санкции и проценты, предусмотренные договором либо законом за просрочку оплаты товаров (работ, услуг), подлежат начислению на цену товара без учета налога на добавленную стоимость. Впоследствии данный пункт из обзора был исключён, однако по-прежнему применялся судами. Точку в споре поставил тот же Президиум ВАС РФ, который в постановлении от 22.09.2009 N 5451/09 указал, что проценты за пользование чужими денежными средствами по ст. 395 ГК РФ начисляются на всю сумму задолженности включая НДС. Данная правовая позиция применяется и в настоящее время.'
+  }, {
+    title: 'С какого момента начинать расчёт процентов по 395 ГК РФ?',
+    description: 'lorem ipsum'
+  }, {
+    title: 'Можно ли одновременно начислять проценты по 395 ГК РФ и неустойку?',
+    description: 'lorem ipsum'
+  }]
+};
 var dateFormat = 'DD.MM.YYYY';
 var LoadingStatus;
 
@@ -1252,6 +1269,9 @@ var CalculatorsList = function CalculatorsList() {
 };
 
 /* harmony default export */ const components_CalculatorsList_CalculatorsList = (CalculatorsList);
+;// CONCATENATED MODULE: ./src/pages/Calculators/Calculators.scss
+// extracted by mini-css-extract-plugin
+/* harmony default export */ const Calculators_Calculators = ({"calcWrapper":"TDJb3rY6HD_MJWD8UTvQ","questionsWrapper":"IXDiDlXVuuclIHewBtrQ"});
 ;// CONCATENATED MODULE: ./src/pages/Calculators/Calculators.tsx
 
 
@@ -1259,13 +1279,16 @@ var CalculatorsList = function CalculatorsList() {
 
 
 
+
 var Calculators_Title = typography/* default.Title */.Z.Title;
+var Panel = collapse/* default.Panel */.Z.Panel;
 
 var Calculators = function Calculators() {
   var params = (0,react_router/* useParams */.UO)();
   var calcId = params.calcId;
   var Component = calcId ? calcConfigs[calcId].component : components_CalculatorsList_CalculatorsList;
   var title = calcId ? calcConfigs[calcId].title : 'Юридические калькуляторы';
+  var accordionList = calcId ? calcQuestions[calcId] : [];
 
   var renderBredCrumbs = function renderBredCrumbs() {
     return calcId ? /*#__PURE__*/react.createElement(breadcrumb/* default */.Z, {
@@ -1281,12 +1304,32 @@ var Calculators = function Calculators() {
     }, /*#__PURE__*/react.createElement(breadcrumb/* default.Item */.Z.Item, null, "\u041A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440\u044B"));
   };
 
-  return /*#__PURE__*/react.createElement("div", null, renderBredCrumbs(), /*#__PURE__*/react.createElement(Calculators_Title, {
+  return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement(row/* default */.Z, null, /*#__PURE__*/react.createElement(col/* default */.Z, {
+    span: 24
+  }, /*#__PURE__*/react.createElement("div", null, renderBredCrumbs(), /*#__PURE__*/react.createElement(Calculators_Title, {
     level: 2
-  }, title), /*#__PURE__*/react.createElement(Component, null));
+  }, title)))), /*#__PURE__*/react.createElement(row/* default */.Z, {
+    className: Calculators_Calculators.calcWrapper
+  }, /*#__PURE__*/react.createElement(col/* default */.Z, {
+    span: 24,
+    xl: 12
+  }, /*#__PURE__*/react.createElement(Component, null)), /*#__PURE__*/react.createElement(col/* default */.Z, {
+    span: 24,
+    lg: 12
+  }, accordionList.length && /*#__PURE__*/react.createElement("div", {
+    className: Calculators_Calculators.questionsWrapper
+  }, /*#__PURE__*/react.createElement(collapse/* default */.Z, {
+    key: 1,
+    accordion: true
+  }, accordionList.map(function (it) {
+    return /*#__PURE__*/react.createElement(Panel, {
+      header: it.title,
+      key: it.title
+    }, /*#__PURE__*/react.createElement("p", null, it.description));
+  }))))));
 };
 
-/* harmony default export */ const Calculators_Calculators = (Calculators);
+/* harmony default export */ const pages_Calculators_Calculators = (Calculators);
 // EXTERNAL MODULE: ./node_modules/antd/es/table/index.js + 124 modules
 var table = __webpack_require__(4223);
 // EXTERNAL MODULE: ./node_modules/@ant-design/icons/es/icons/FilePdfOutlined.js + 1 modules
@@ -1374,10 +1417,10 @@ var routes = [{
   component: About_About
 }, {
   path: "".concat(app_pathDict.calculators.pathname),
-  component: Calculators_Calculators
+  component: pages_Calculators_Calculators
 }, {
   path: "".concat(app_pathDict.calculators.pathname, "/:calcId"),
-  component: Calculators_Calculators
+  component: pages_Calculators_Calculators
 }, {
   path: "".concat(app_pathDict.account.pathname),
   component: pages_Account_Account
@@ -2145,9 +2188,9 @@ module.exports = __webpack_require__.p + "b9e784bf9f6f64f6eb25.png";
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
 /******/ 	__webpack_require__.O(undefined, [987], () => (__webpack_require__(1008)))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, [987], () => (__webpack_require__(2981)))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, [987], () => (__webpack_require__(5226)))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=bundle.37f79c88e101d658d557.js.map
+//# sourceMappingURL=bundle.0dc8220bc51d3eed3096.js.map
