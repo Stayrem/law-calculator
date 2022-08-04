@@ -5,6 +5,7 @@ const pathDict = {
   about: { pathname: '/about' },
   calculators: { pathname: '/calculators' },
   getCalculatorById: (calcId) => ({ pathname: `/calculators/${calcId}` }),
+  account: { pathname: '/account' },
 } as const;
 
 export default pathDict;
