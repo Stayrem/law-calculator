@@ -17,7 +17,7 @@ const Calculators = () => {
   const { calcId } = params;
   const Component = calcId ? calcConfigs[calcId].component : CalculatorsList;
   const title = calcId ? calcConfigs[calcId].title : 'Юридические калькуляторы';
-  const accordionList = calcId ? calcQuestions[calcId] : [];
+  const accordionList = calcQuestions[calcId] ? calcQuestions[calcId] : [];
   const renderBredCrumbs = () => (calcId
     ? (
       <Breadcrumb style={{ padding: '16px 0' }}>
@@ -49,7 +49,7 @@ const Calculators = () => {
           <Component />
         </Col>
         <Col span={24} lg={12}>
-          {accordionList.length && (
+          {accordionList.length > 0 && (
           <div className={css.questionsWrapper}>
             <Collapse key={1} accordion>
               {accordionList.map((it) => (
