@@ -37,7 +37,7 @@
     "@ant-design/icons": "4.7.0",
     "@hookform/strictly-typed": "^0.0.4",
     "@reduxjs/toolkit": "1.7.2",
-    "antd": "4.21.7",
+    "antd": "^4.23.6",
     "antd-dayjs-webpack-plugin": "1.0.6",
     "axios": "0.25.0",
     "css-minimizer-webpack-plugin": "3.4.1",

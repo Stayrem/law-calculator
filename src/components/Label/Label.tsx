@@ -15,10 +15,10 @@ const Label = (props: ILabel) => {
   } = props;
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <label style={style} className={[css.label, className].concat(isRow ? [] : css.column).join(' ')}>
+    <div style={style} className={[css.label, className].concat(isRow ? [] : css.column).join(' ')}>
       <span className={css.labelText}>{label}</span>
       {children}
-    </label>
+    </div>
   );
 };
 

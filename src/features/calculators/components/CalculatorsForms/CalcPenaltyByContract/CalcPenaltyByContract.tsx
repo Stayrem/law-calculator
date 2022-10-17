@@ -9,6 +9,7 @@ import DynamicTable from '../../DynamicTable/DynamicTable';
 import css from './CalcPenaltyByContract.module.scss';
 import { dateFormat } from '../../../../../constants';
 import { KeyRates } from '../types';
+import { CalcPenaltyByContractTable } from '../CalcPenaltyBy395Table/CalcPenaltyByContractTable';
 
 const { Option } = Select;
 
@@ -17,28 +18,29 @@ interface IForm {
   percent: number;
   maxPercent: number;
   debtList: { id: number; sum: number; date: number }[];
-  creditList: { id: number; sum: number; date: number }[];
+  paymentsList: { id: number; sum: number; date: number }[];
   keyRate: KeyRates;
   keyRateDate: number;
   maxPercentInRuble: number;
 }
 
 const useCalcPenaltyByContract = () => {
-  const { control, handleSubmit } = useForm<IForm>();
+  const { control, handleSubmit, watch } = useForm<IForm>();
   const onSubmit = handleSubmit((params) => console.log(params));
-  return { values: { control }, operations: { handleSubmit: onSubmit } };
-};
+  const formCurrentState = watch();
 
+  return { values: { control, formCurrentState }, operations: { handleSubmit: onSubmit } };
+};
 const selectAfter = (
   <Select defaultValue="в день" className="select-after">
     <Option value="в день">в день</Option>
-    <Option value="в месяц">.в месяц</Option>
+    <Option value="в месяц">в месяц</Option>
     <Option value="в год">в год</Option>
   </Select>
 );
 
 const CalcPenaltyByContractView = (props: ReturnType<typeof useCalcPenaltyByContract>) => {
-  const { values: { control }, operations: { handleSubmit } } = props;
+  const { values: { control, formCurrentState }, operations: { handleSubmit } } = props;
 
   return (
     <form>
@@ -62,17 +64,19 @@ const CalcPenaltyByContractView = (props: ReturnType<typeof useCalcPenaltyByCont
           )}
         />
         <Controller
-          name="creditList"
+          name="paymentsList"
           control={control}
           render={({ field: { onChange } }) => (
             <DynamicTable onChange={onChange} label="Частичная оплата задолжности" />
           )}
         />
       </div>
+
       <div className={css.formRow}>
         <Controller
           name="percent"
           control={control}
+          defaultValue={2}
           render={({ field: { onChange } }) => (
             <Label label="&nbsp;" style={{ width: '180px' }}>
               <InputNumber prefix="%" onChange={onChange} defaultValue={2} addonAfter={selectAfter} />
@@ -90,7 +94,6 @@ const CalcPenaltyByContractView = (props: ReturnType<typeof useCalcPenaltyByCont
           )}
         />
       </div>
-      <Button className={css.submitButton} type="primary" onClick={handleSubmit}>Рассчитать</Button>
     </form>
   );
 };

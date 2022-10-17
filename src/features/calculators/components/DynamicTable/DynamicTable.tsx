@@ -33,13 +33,13 @@ const DynamicTable = (props: IProps) => {
       const filteredState = state.filter((it) => it.id !== id);
       const payload = [...filteredState, { id, sum: inputSum, date }];
       onChange(payload);
-      setState(payload);
+      return setState(payload);
     }
     const { sum } = state.find((it) => it.id === id);
     const filteredState = state.filter((it) => it.id !== id);
     const payload = [...filteredState, { id, sum, date: inputDate }];
     onChange(payload);
-    setState(payload);
+    return setState(payload);
   };
   const itemDeleteHandler = (id: number) => {
     const payload = state.filter((it) => it.id !== id);
