@@ -74,7 +74,10 @@ var slicedToArray = __webpack_require__(9439);
 
 
 
+
 var useLoginModal = function useLoginModal() {
+  var navigate = (0,react_router/* useNavigate */.s0)();
+
   var _useState = (0,react.useState)(false),
       _useState2 = (0,slicedToArray/* default */.Z)(_useState, 2),
       isModalVisible = _useState2[0],
@@ -85,7 +88,8 @@ var useLoginModal = function useLoginModal() {
       handleSubmit = _useForm.handleSubmit;
 
   var onSubmit = handleSubmit(function (params) {
-    return console.log(params);
+    setModalVisibility(false);
+    navigate('/account');
   });
   return {
     values: {
@@ -1288,7 +1292,7 @@ var Calculators = function Calculators() {
   var calcId = params.calcId;
   var Component = calcId ? calcConfigs[calcId].component : components_CalculatorsList_CalculatorsList;
   var title = calcId ? calcConfigs[calcId].title : 'Юридические калькуляторы';
-  var accordionList = calcId ? calcQuestions[calcId] : [];
+  var accordionList = calcQuestions[calcId] ? calcQuestions[calcId] : [];
 
   var renderBredCrumbs = function renderBredCrumbs() {
     return calcId ? /*#__PURE__*/react.createElement(breadcrumb/* default */.Z, {
@@ -1316,7 +1320,7 @@ var Calculators = function Calculators() {
   }, /*#__PURE__*/react.createElement(Component, null)), /*#__PURE__*/react.createElement(col/* default */.Z, {
     span: 24,
     lg: 12
-  }, accordionList.length && /*#__PURE__*/react.createElement("div", {
+  }, accordionList.length > 0 && /*#__PURE__*/react.createElement("div", {
     className: Calculators_Calculators.questionsWrapper
   }, /*#__PURE__*/react.createElement(collapse/* default */.Z, {
     key: 1,
@@ -2193,4 +2197,4 @@ module.exports = __webpack_require__.p + "b9e784bf9f6f64f6eb25.png";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=bundle.0dc8220bc51d3eed3096.js.map
+//# sourceMappingURL=bundle.ef94720e7810cc5c5a00.js.map
