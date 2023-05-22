@@ -9,28 +9,40 @@ import CalcDoublePenaltyKeyRate
 import CalcPenaltyByContract
   from './features/calculators/components/CalculatorsForms/CalcPenaltyByContract/CalcPenaltyByContract';
 
+export const dateFormat = 'DD.MM.YYYY';
+
 export const calcConfigs = {
   calc395: {
     title: 'Расчёт процентов по ст. 395 ГК РФ',
+    description: 'Расчёт процентов за пользование чужими деньгами согласно стандартным условиям ГК РФ',
     component: CalcBy395,
+    type: 'CalcBy395',
   },
   calc317: {
     title: 'Расчёт процентов задолженности по ст. 317.1 ГК РФ',
+    description: 'Расчёт процентов на сумму задолженности, основанный на статье ГК РФ',
     component: CalcBy317,
+    type: 'CalcBy317',
   },
   calcPenaltyKeyRate: {
     title: 'Расчёт неустойки по 1/300, 1/150 или 1/130 от ключевой ставки ЦБ РФ',
+    description: 'Расчёт пени за задержку платежа, основанный на доле ключевой ставки ЦБ РФ',
     component: CalcPenaltyKeyRate,
+    type: 'CalcPenaltyKeyRate',
   },
   calcDoublePenaltyKeyRate: {
     title: 'Расчёта неустойки по двойной ключевой ставке ЦБ РФ',
+    description: 'Расчёт штрафа за задержку платежа, исходя из удвоенной ключевой ставки ЦБ РФ',
     component: CalcDoublePenaltyKeyRate,
+    type: 'CalcDoublePenaltyKeyRate',
   },
   calcPenaltyByContract: {
     title: 'Расчёта неустойки по договору',
+    description: 'Расчёт пени за просрочку платежа согласно индивидуальным условиям договора',
     component: CalcPenaltyByContract,
+    type: 'CalcPenaltyByContract',
   },
-};
+} as const;
 
 export const calcQuestions = {
   calc395: [
@@ -51,12 +63,3 @@ export const calcQuestions = {
     },
   ],
 };
-
-export const dateFormat = 'DD.MM.YYYY';
-
-export enum LoadingStatus {
-  NONE = 'NONE',
-  LOADING = 'LOADING',
-  FINISHED = 'Finished',
-  ERROR = 'ERROR',
-}

@@ -1,96 +1,204 @@
-import { intervalToDuration } from 'date-fns';
-import dayjs from 'dayjs';
-import {
-  ICalcPenaltyByContract,
-} from '../../features/calculators/components/CalculatorsForms/CalcPenaltyBy395Table/CalcPenaltyByContractTable';
-import { dateFormat } from '../../constants';
+import dayjs, { Dayjs } from 'dayjs';
+import { CalcTypes, ListItem, RateItem } from '../../features/calculators/types';
 
-const DAY = 86400000;
+export type MergedListItem = ListItem & {
+  startDate: Dayjs;
+  sum: number;
+  type: 'debt' | 'payment' | 'debtInfo' | 'paymentInfo';
+  rate?: number;
+  amount?: number;
+  endDate?: Dayjs;
+  duration?: number;
+  penny?: number;
+  formula?: string;
+  title?: string;
+}
 
-export const calculatePenalty = (props: ICalcPenaltyByContract) => {
-  const debtList = props.debtList.slice().map((it) => (
-    { ...it, date: dayjs.unix(it.date) }));
-  const paymentsList = props.paymentsList ? props.paymentsList.slice().map((it) => (
-    { ...it, sum: it.sum * -1, date: dayjs.unix(it.date) })) : [];
+function calculatePenalty(amount: number, days: number, interestRate: number) {
+  const dailyInterestRate = interestRate / 100 / 365;
+  return amount * dailyInterestRate * days;
+}
 
-  const debtCreditList = [...debtList, ...paymentsList]
-    .sort((a, b) => a.date.unix() - b.date.unix());
-  let debt = 0;
-  const result = debtCreditList.reduce((acc, curr, i, arr) => {
-    if (i === 0) {
-      debt = curr.sum;
-      return [
-        {
-          sum: curr.sum,
-          startDate: curr.date.format(dateFormat),
-          endDate: arr[i + 1].date.add(-1, 'day').format(dateFormat),
-        },
-      ];
-    }
-    debt += curr.sum;
-    if (curr.sum > 0) {
-      return [
-        ...acc,
-        { sum: `+${curr.sum}`, startDate: curr.date.format(dateFormat), endDate: 'Дополнительная задолженность' },
-        {
-          sum: debt,
-          startDate: curr.date.format(dateFormat),
-          endDate: arr[i + 1]
-            ? arr[i + 1].date.format(dateFormat)
-            : dayjs.unix(props.endDate).format(dateFormat),
-        },
-      ];
-    }
-
-    return [
-      ...acc,
-      { sum: curr.sum, startDate: curr.date.format(dateFormat), endDate: 'Погашение задолженности' },
-      {
-        sum: debt,
-        startDate: curr.date.add(1, 'day').format(dateFormat),
-        endDate: arr[i + 1]
-          ? arr[i + 1].date.format(dateFormat)
-          : dayjs.unix(props.endDate).format(dateFormat),
-      },
-    ];
-  }, []);
-  console.log(result);
-};
-window.calculatePenalty = calculatePenalty;
-window.props = {
-  interestRate: {
-    1669852800: 6, // 1.12.2022
-    1669939200: 6.5, // 2.12.2022
-    1670025600: 6.5, // 3.12.2022
-    1670112000: 7, // 4.12.2022
-    1670198400: 7, // 5.12.2022
-    1670284800: 8, // 6.12.2022
-    1670371200: 8, // 7.12.2022
-    1670457600: 8, // 8.12.2022
-    1670544000: 8, // 9.12.2022
-    1670630400: 9, // 10.12.2022
-    1670716800: 9, // 11.12.2022
-    1670803200: 9, // 12.12.2022
-    1670889600: 9, // 13.12.2022
-    1670976000: 10, // 14.12.2022
-    1671062400: 10, // 15.12.2022
-    1671148800: 10, // 16.12.2022
-  },
-  endDate: 1671202376, // 16.12.2022
-  debtList: [
-    { date: 1669852800, id: 0, sum: 1000 },
-    // 1.12.2022
-    { date: 1670025600, id: 1, sum: 500 },
-    // 3.12.2022
-    { date: 1671062400, id: 1, sum: 500 },
-    // 15.12.2022
-  ],
-  paymentsList: [
-    { date: 1670198400, id: 0, sum: 100 },
-    // 5.12.2022
-    { date: 1670630400, id: 1, sum: 200 },
-    // 10.12.2022
-  ],
+const listTypesDict: Record<MergedListItem['type'], MergedListItem['type']> = {
+  debt: 'debt', payment: 'payment', debtInfo: 'debtInfo', paymentInfo: 'paymentInfo',
 };
 
-calculatePenalty(window.props);
+function findRateForDate(rates: RateItem[], date: Dayjs): number | null {
+  for (let i = 0; i < rates.length - 1; i += 1) {
+    if (date.unix() >= rates[i].timestamp && date.unix() < rates[i + 1].timestamp) {
+      return rates[i].rate;
+    }
+  }
+
+  if (date.unix() >= rates[rates.length - 1].timestamp) {
+    return rates[rates.length - 1].rate;
+  }
+
+  if (date.unix() < rates[0].timestamp) {
+    return rates[0].rate;
+  }
+
+  return null;
+}
+
+function calculateDuration(date1: dayjs.Dayjs, date2: dayjs.Dayjs): number {
+  const duration = Math.abs(date1.diff(date2, 'day'));
+  return Math.round(duration);
+}
+
+const findNextRateChange = (r: RateItem[], startDate: number, endDate: number): RateItem | null => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const rate of r) {
+    if (rate.timestamp > startDate && rate.timestamp < endDate) {
+      return rate;
+    }
+  }
+  return null;
+};
+
+const getYearDays = (date: Dayjs): 365 | 366 => (date.year() % 4 === 0 ? 366 : 365);
+
+function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): void {
+  for (let i = 0; i < extendedList.length; i += 1) {
+    if (extendedList[i].type === 'paymentInfo' || extendedList[i].type === 'debtInfo') {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    let currentDate = extendedList[i].date;
+    const { endDate } = extendedList[i];
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const nextRateChange = findNextRateChange(rates, currentDate.unix(), endDate.unix());
+      const nextYearChange = currentDate.year() !== endDate.year() ? dayjs(`${endDate.year()}-01-01`, 'YYYY-MM-DD') : null;
+
+      if (nextRateChange || nextYearChange) {
+        const rateChangeDate = nextRateChange
+          ? dayjs.unix(nextRateChange.timestamp)
+          : nextYearChange;
+        const rate = nextRateChange ? nextRateChange.rate : extendedList[i].rate;
+        const duration = calculateDuration(rateChangeDate, extendedList[i].endDate);
+        const newItem: MergedListItem = {
+          ...extendedList[i],
+          startDate: rateChangeDate,
+          endDate: extendedList[i].endDate,
+          penny: calculatePenalty(extendedList[i].amount, rate, duration),
+          formula: `${extendedList[i].amount} x ${duration} x ${rate} / ${getYearDays(rateChangeDate)}`,
+          rate,
+          duration,
+        };
+
+        // eslint-disable-next-line no-param-reassign
+        extendedList[i].endDate = rateChangeDate.subtract(1, 'day');
+        // eslint-disable-next-line no-param-reassign
+        extendedList[i].duration = calculateDuration(currentDate, rateChangeDate);
+        // eslint-disable-next-line no-param-reassign
+        extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${rate} / ${getYearDays(rateChangeDate)}`;
+
+        extendedList.splice(i + 1, 0, newItem);
+        i += 1;
+
+        currentDate = rateChangeDate;
+      } else {
+        break;
+      }
+    }
+  }
+}
+
+type Props = {
+  debtList: ListItem[],
+  paymentsList?: ListItem[],
+  endDate: Dayjs,
+  rates: RateItem[],
+}
+
+export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
+  const {
+    debtList, paymentsList, endDate, rates,
+  } = props;
+  const mergedList: MergedListItem[] = debtList
+    .map((item) => ({
+      ...item, type: listTypesDict.debt, startDate: item.date,
+    }))
+    .concat(paymentsList
+      ? paymentsList.map((item) => ({
+        ...item,
+        type: listTypesDict.payment,
+        startDate: item.date,
+      }))
+      : []);
+
+  mergedList.sort((a, b) => a.date.diff(b.date));
+
+  const extendedList: MergedListItem[] = [];
+
+  for (let i = 0; i < mergedList.length; i += 1) {
+    mergedList[i].rate = findRateForDate(rates, mergedList[i].date);
+
+    if (i !== 0 && mergedList[i].type === 'payment') {
+      extendedList.push({
+        type: listTypesDict.paymentInfo,
+        startDate: mergedList[i].startDate,
+        amount: mergedList[i].sum,
+        endDate: null,
+        title: 'Погашение части долга',
+        duration: null,
+        rate: null,
+        sum: 0,
+        date: mergedList[i].startDate,
+      });
+    } else if (i !== 0 && mergedList[i].type === 'debt') {
+      extendedList.push({
+        type: listTypesDict.debtInfo,
+        startDate: mergedList[i].startDate,
+        amount: mergedList[i].sum,
+        endDate: null,
+        title: 'Дополнительная задолженность',
+        duration: null,
+        rate: null,
+        sum: 0,
+        date: mergedList[i].startDate,
+      });
+    }
+
+    if (mergedList[i].type === 'debt' || mergedList[i].type === 'payment') {
+      mergedList[i].amount = i === 0
+        ? mergedList[i].sum
+        : mergedList[i - 1].amount + (mergedList[i].type === 'debt' ? mergedList[i].sum : -mergedList[i].sum);
+    }
+
+    extendedList.push(mergedList[i]);
+  }
+  for (let i = 0; i < extendedList.length; i += 1) {
+    if (extendedList[i].type === 'paymentInfo' || extendedList[i].type === 'debtInfo') {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    const currentDate = dayjs(extendedList[i].date, 'DD.MM.YYYY');
+    let nextDate: dayjs.Dayjs | null;
+
+    if (i < extendedList.length - 1) {
+      nextDate = extendedList[i + 1].date ? extendedList[i + 1].date : null;
+      extendedList[i].endDate = nextDate
+        ? nextDate.subtract(1, 'day')
+        : null;
+    } else {
+      nextDate = endDate;
+      extendedList[i].endDate = endDate;
+    }
+    extendedList[i].duration = nextDate
+      ? calculateDuration(currentDate, nextDate)
+      : calculateDuration(currentDate, endDate);
+    extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${extendedList[i].rate.toFixed(2)} / ${getYearDays(currentDate)}`;
+    extendedList[i].penny = extendedList[i].duration
+      ? calculatePenalty(extendedList[i].amount, extendedList[i].rate, extendedList[i].duration)
+      : null;
+  }
+
+  processRateChanges(extendedList, rates);
+
+  return extendedList;
+}

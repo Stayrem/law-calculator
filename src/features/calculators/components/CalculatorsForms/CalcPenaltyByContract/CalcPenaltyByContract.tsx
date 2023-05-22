@@ -9,7 +9,7 @@ import DynamicTable from '../../DynamicTable/DynamicTable';
 import css from './CalcPenaltyByContract.module.scss';
 import { dateFormat } from '../../../../../constants';
 import { KeyRates } from '../types';
-import { CalcPenaltyByContractTable } from '../CalcPenaltyBy395Table/CalcPenaltyByContractTable';
+import { CalcPenaltyByContractTable } from '../CalcPenaltyTable/CalcPenaltyTable';
 
 const { Option } = Select;
 

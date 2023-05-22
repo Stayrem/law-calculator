@@ -20,6 +20,9 @@ module.exports = {
     historyApiFallback: true,
     compress: true,
     port: 9000,
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

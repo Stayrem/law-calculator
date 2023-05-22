@@ -6,6 +6,7 @@ import { getAccessToken, removeAccessToken, setAccessToken } from './utils';
 import { keysToCamel } from '../utils/utils';
 import pathDict from '../app/pathDict';
 import { IUserRequest } from '../features/user/userSlice';
+import { RateItem } from '../features/calculators/types';
 
 const axiosInstance = axios.create({
   baseURL: '/',
@@ -56,3 +57,5 @@ export const fetchAddUser = async (userData) => axiosInstance
 export const fetchCheckUser = async () => axiosInstance
   .get<IUserNameResponse>(apiDict.checkUser)
   .then((res) => res.data.data);
+
+export const fetchRates = () => axiosInstance.get<RateItem[]>('/api/cbr/key-rate').then((res) => res.data.map((it) => ({ ...it, timestamp: it.timestamp / 1000 })));
