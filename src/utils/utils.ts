@@ -47,12 +47,7 @@ interface ICalcPenalty {
 export const calculatePenalty = (props: ICalcPenalty) => {
   const { daysInYear = 365 } = props;
   if (props.interestPeriod === 'year') {
-    const dailyPercent = props.interestRate / daysInYear; // Процент в день
-    let totalAmount = props.amount; // Изначальная сумма
-    for (let i = 0; i < props.days; i += 1) {
-      totalAmount += (totalAmount * dailyPercent) / 100; // Начисление процента
-    }
-    return totalAmount - props.amount;
+    return (props.amount * props.days * (props.interestRate / 100)) / props.daysInYear;
   }
   if (props.interestPeriod === 'day') {
     let totalAmount = props.amount;

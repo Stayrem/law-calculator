@@ -167,8 +167,6 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
   const extendedList: MergedListItem[] = [];
 
   for (let i = 0; i < mergedList.length; i += 1) {
-    mergedList[i].rate = findRateForDate(rates, mergedList[i].date);
-
     if (i !== 0 && mergedList[i].type === 'payment') {
       extendedList.push({
         type: listTypesDict.paymentInfo,
@@ -221,10 +219,11 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
       nextDate = endDate;
       extendedList[i].endDate = endDate;
     }
+    mergedList[i].rate = findRateForDate(rates, mergedList[i].date);
     extendedList[i].duration = nextDate
       ? calculateDuration(currentDate, nextDate) + 1
       : calculateDuration(currentDate, endDate) + 1;
-    extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${extendedList[i].rate.toFixed(2)} / ${getYearDays(currentDate)}`;
+    extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${extendedList[i].rate.toFixed(2)}% / ${getYearDays(currentDate)}`;
     extendedList[i].penny = extendedList[i].duration
       ? calculatePenalty({
         amount: extendedList[i].amount,
