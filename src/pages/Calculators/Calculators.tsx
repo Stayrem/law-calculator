@@ -28,6 +28,7 @@ const Calculators = () => {
   useEffect(() => {
     dispatch(getRates());
   }, []);
+
   const renderBredCrumbs = () => (calcId
     ? (
       <Breadcrumb style={{ padding: '16px 0' }}>

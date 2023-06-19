@@ -12,6 +12,13 @@ export const useLoginModal = () => {
   const navigate = useNavigate();
 
   const [isModalVisible, setModalVisibility] = useState(false);
+  const { control, handleSubmit } = useForm<ILoginForm>();
+  const onSubmit = handleSubmit((params) => {
+    setModalVisibility(false);
+    navigate('/account');
+  });
+
+  const [isModalVisible, setModalVisibility] = useState(false);
   const {
     trigger, control, watch, handleSubmit, formState: { errors },
   } = useForm<ILoginForm>({ mode: 'onSubmit' });
