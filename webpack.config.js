@@ -90,7 +90,12 @@ module.exports = {
     ],
   },
   plugins: [
-    new AntdDayjsWebpackPlugin(),
+    // new AntdDayjsWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, './src/static'), to: 'dist' },
+      ],
+    }),
     new HtmlWebpackPlugin({
       title: 'Web App',
       template: path.resolve(__dirname, './src/template/index.html'),

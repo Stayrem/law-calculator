@@ -2,8 +2,8 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { Provider } from 'react-redux';
 import App from './app/App';
-import 'antd/dist/antd.css';
 import store from './store/store';
+import './common/css/style.scss';
 
 document.addEventListener('DOMContentLoaded', () => {
   const $root = document.getElementById('root');

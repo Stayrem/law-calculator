@@ -12,7 +12,7 @@ const CalculatorsList = () => {
     <div>
 
       {calculatorsList.map((it) => (
-        <Link className={css.cardLink} to={pathDict.getCalculatorById(it[0]).pathname}>
+        <Link key={it[0]} className={css.cardLink} to={pathDict.getCalculatorById(it[0]).pathname}>
           <Card title={it[1].title} bordered>
             {it[1].description}
           </Card>

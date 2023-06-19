@@ -8,6 +8,9 @@ import CalcDoublePenaltyKeyRate
   from './features/calculators/components/CalculatorsForms/CalcDoublePenaltyKeyRate/CalcDoublePenaltyKeyRate';
 import CalcPenaltyByContract
   from './features/calculators/components/CalculatorsForms/CalcPenaltyByContract/CalcPenaltyByContract';
+import {
+  CalcLoanPenaltyTable,
+} from './features/calculators/components/CalculatorsResultTables/CalcLoanContractPenaltyTable/CalcLoanContractPenaltyTable';
 
 export const dateFormat = 'DD.MM.YYYY';
 
@@ -42,6 +45,14 @@ export const calcConfigs = {
     component: CalcPenaltyByContract,
     type: 'CalcPenaltyByContract',
   },
+  /*  calcPenaltyByLoanContract: {
+    title: 'Расчёта процентов по договору займа',
+    description: 'Калькулятор расчёта процентов по договору займа (ст. 809 ГК РФ)\n'
+      + 'или на условиях коммерческого кредита (ст. 823 ГК РФ)',
+    component: CalcLoanPenaltyTable,
+    type: 'CalcPenaltyByLoanContract',
+  }, */
+
 } as const;
 
 export const calcQuestions = {

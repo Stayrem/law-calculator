@@ -5,18 +5,20 @@ import {
 } from 'antd';
 
 import css from './CalcPenaltyTable.scss';
-import { mergeAndSortDebtsAndPayments, MergedListItem } from '../../../../../utils/calculation/395';
-import { RateItem } from '../../../types';
-import { IForm } from '../CalcBy395/CalcBy395';
+import { IForm } from '../../CalculatorsForms/CalcPenaltyByLoanContract/CalcPenaltyByLoanContract';
 import { dateFormat } from '../../../../../constants';
+import {
+  mergeAndSortDebtsAndPaymentsLoan,
+  MergedListItem,
+} from '../../../../../utils/calculation/loanContract';
 
 const { Column, ColumnGroup } = Table;
 
 export interface ICalcPenaltyByContract {
-  tableData: IForm & { rates: RateItem[] };
+  tableData: IForm;
 }
 
-const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
+const useCalcLoanPenaltyTable = (props: ICalcPenaltyByContract) => {
   const { tableData } = props;
   const getIsPaymentInfoOrDebtInfo = (colSpan: number) => (el: MergedListItem) => ({ colSpan: el.type === 'paymentInfo' || el.type === 'debtInfo' ? colSpan : 1 });
   const renderEndDate = (el: MergedListItem) => {
@@ -34,7 +36,26 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
     }
     return el.amount;
   };
-  const dataSource = mergeAndSortDebtsAndPayments(tableData);
+  const renderPeriodPercents = (el: MergedListItem) => {
+    if (el.type === 'debt') {
+      return `${el.penny}`;
+    }
+    if (el.type === 'payment') {
+      return `-${el.sum}`;
+    }
+    return null;
+  };
+  const renderPercentsSum = (el: MergedListItem, prevEl: MergedListItem | undefined) => {
+    if (el.type === 'debt') {
+      return `= ${el.penny + (prevEl ? prevEl.penny : 0)}`;
+    }
+    if (el.type === 'payment') {
+      return `= ${el.sum + (prevEl ? prevEl.penny : 0)}`;
+    }
+    return null;
+  };
+  console.log(tableData);
+  const dataSource = /* mergeAndSortDebtsAndPaymentsLoan(tableData); */ [];
   return {
     values: {
       dataSource,
@@ -44,11 +65,13 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
       getIsPaymentInfoOrDebtInfo,
       renderEndDate,
       renderAmount,
+      renderPeriodPercents,
+      renderPercentsSum,
     },
   };
 };
 
-const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => {
+const CalcLoanPenaltyTableView = (props: ReturnType<typeof useCalcLoanPenaltyTable>) => {
   const {
     values: {
       dataSource,
@@ -58,17 +81,19 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
       getIsPaymentInfoOrDebtInfo,
       renderEndDate,
       renderAmount,
+      renderPeriodPercents,
+      renderPercentsSum,
     },
   } = props;
   return (
     <div className={css.wrapper}>
-      <Descriptions
+      {/* <Descriptions
         bordered
         size="small"
       >
-        <Descriptions.Item label="Задолженность">{dataSource[0].amount}</Descriptions.Item>
+      <Descriptions.Item label="Задолженность">{dataSource[0].amount}</Descriptions.Item>
         <Descriptions.Item label="Период Просрочки">{`с ${dataSource[0].date.format(dateFormat)} по ${endDate.format(dateFormat)}`}</Descriptions.Item>
-      </Descriptions>
+     </Descriptions> */}
       <Table dataSource={dataSource} pagination={{ pageSize: Infinity, hideOnSinglePage: true }}>
         <Column render={renderAmount} title="Задолженность" key="amount" />
         <ColumnGroup title="Период просрочки">
@@ -76,23 +101,23 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
           <Column render={renderEndDate} onCell={getIsPaymentInfoOrDebtInfo(5)} title="по" key="endDate" />
           <Column onCell={getIsPaymentInfoOrDebtInfo(0)} title="дней" dataIndex="duration" key="duration" />
         </ColumnGroup>
-        <Column render={(it: MergedListItem) => (it.rate ? it.rate.toFixed(2) : null)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Ставка" key="rate" />
         <Column onCell={getIsPaymentInfoOrDebtInfo(0)} title="Формула" dataIndex="formula" key="formula" />
-        <Column render={(it: MergedListItem) => (it.penny ? it.penny.toFixed(2) : null)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Неустойка" key="penny" />
+        <Column render={renderPeriodPercents} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Процент за период" key="percent" />
+        <Column render={(it: MergedListItem, _, index) => renderPercentsSum(it, dataSource[index - 1])} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Сумма Процентов" key="percentsSum" />
       </Table>
       <Descriptions
         bordered
         size="small"
         layout="vertical"
       >
-        <Descriptions.Item label="Сумма основного долга">{dataSource[dataSource.length - 1].amount}</Descriptions.Item>
-        <Descriptions.Item label="Сумма процентов">{dataSource.reduce((acc, curr) => acc + (curr.penny || 0), 0).toFixed(2)}</Descriptions.Item>
+        {/*        <Descriptions.Item label="Сумма основного долга">{dataSource[dataSource.length - 1].amount}</Descriptions.Item>
+        <Descriptions.Item label="Сумма процентов">{dataSource.reduce((acc, curr) => acc + curr.penny, 0).toFixed(2)}</Descriptions.Item> */}
       </Descriptions>
     </div>
   );
 };
 
-export const CalcPenaltyTable = (props: ICalcPenaltyByContract) => {
-  const behaviour = useCalcPenaltyTable(props);
-  return <CalcPenaltyTableView {...behaviour} />;
+export const CalcLoanPenaltyTable = (props: ICalcPenaltyByContract) => {
+  const behaviour = useCalcLoanPenaltyTable(props);
+  return <CalcLoanPenaltyTableView {...behaviour} />;
 };

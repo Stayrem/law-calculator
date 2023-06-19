@@ -7,7 +7,7 @@ import {
 import css from './CalcPenaltyTable.scss';
 import { mergeAndSortDebtsAndPayments, MergedListItem } from '../../../../../utils/calculation/395';
 import { RateItem } from '../../../types';
-import { IForm } from '../CalcBy395/CalcBy395';
+import { IForm } from '../../CalculatorsForms/CalcBy395/CalcBy395';
 import { dateFormat } from '../../../../../constants';
 
 const { Column, ColumnGroup } = Table;
@@ -76,9 +76,9 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
           <Column render={renderEndDate} onCell={getIsPaymentInfoOrDebtInfo(5)} title="по" key="endDate" />
           <Column onCell={getIsPaymentInfoOrDebtInfo(0)} title="дней" dataIndex="duration" key="duration" />
         </ColumnGroup>
-        <Column render={(it: MergedListItem) => (it.rate ? it.rate.toFixed(2) : null)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Ставка" key="rate" />
+        <Column render={(it: MergedListItem) => it.rate.toFixed(2)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Ставка" key="rate" />
         <Column onCell={getIsPaymentInfoOrDebtInfo(0)} title="Формула" dataIndex="formula" key="formula" />
-        <Column render={(it: MergedListItem) => (it.penny ? it.penny.toFixed(2) : null)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Неустойка" key="penny" />
+        <Column render={(it: MergedListItem) => it.penny.toFixed(2)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Неустойка" key="penny" />
       </Table>
       <Descriptions
         bordered
@@ -86,7 +86,7 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
         layout="vertical"
       >
         <Descriptions.Item label="Сумма основного долга">{dataSource[dataSource.length - 1].amount}</Descriptions.Item>
-        <Descriptions.Item label="Сумма процентов">{dataSource.reduce((acc, curr) => acc + (curr.penny || 0), 0).toFixed(2)}</Descriptions.Item>
+        <Descriptions.Item label="Сумма процентов">{dataSource.reduce((acc, curr) => acc + curr.penny, 0).toFixed(2)}</Descriptions.Item>
       </Descriptions>
     </div>
   );

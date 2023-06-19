@@ -5,26 +5,35 @@ import { useNavigate } from 'react-router-dom';
 interface ILoginForm {
   login: string;
   password: string;
+  confirmPassword?: string;
 }
 
 export const useLoginModal = () => {
   const navigate = useNavigate();
 
   const [isModalVisible, setModalVisibility] = useState(false);
-  const { control, handleSubmit } = useForm<ILoginForm>();
+  const {
+    trigger, control, watch, handleSubmit, formState: { errors },
+  } = useForm<ILoginForm>({ mode: 'onSubmit' });
+  const closeModalHandler = () => setModalVisibility(false);
+  const openModalHandler = () => setModalVisibility(true);
   const onSubmit = handleSubmit((params) => {
-    setModalVisibility(false);
+    closeModalHandler();
     navigate('/account');
   });
-
+  const password = watch('password');
   return {
     values: {
       isModalVisible,
       control,
+      errors,
+      password,
     },
     operations: {
-      setModalVisibility,
+      closeModalHandler,
+      openModalHandler,
       onSubmit,
+      trigger,
     },
   };
 };

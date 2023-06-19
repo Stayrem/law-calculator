@@ -7,27 +7,28 @@ import { Dayjs } from 'dayjs';
 import DatePicker from '../../../../../components/DatePicker/DatePicker';
 import Label from '../../../../../components/Label/Label';
 import DynamicTable from '../../DynamicTable/DynamicTable';
-import css from './CalcPenaltyByContract.module.scss';
+import css from './CalcPenaltyByLoanContract.module.scss';
 import { dateFormat } from '../../../../../constants';
 import { disabledDebtPaymentDate, disabledEndDate, getIsTableVisible } from '../../../utils';
-import { CalcPenaltyContractTable } from '../../CalculatorsResultTables/CalcPenaltyByContractTable/CalcPenaltyByContractTable';
 import { CALC_CONTRACT_PERIOD_OPTIONS } from '../../../constants';
+import {
+  CalcLoanPenaltyTable,
+} from '../../CalculatorsResultTables/CalcLoanContractPenaltyTable/CalcLoanContractPenaltyTable';
 
 export interface IForm {
   endDate: Dayjs;
   percent: number;
-  maxPercent: number;
   debtList: { id: number; sum: number; date: Dayjs }[];
   paymentsList: { id: number; sum: number; date: Dayjs }[];
   period: 'day' | 'month' | 'year';
 }
 
-const useCalcPenaltyByContract = () => {
+const useCalcPenaltyByLoanContract = () => {
   const { control, watch } = useForm<IForm>();
   const formCurrentState = watch();
   const isTableVisible = useMemo(() => {
     const isBasicValid = getIsTableVisible(formCurrentState);
-    return isBasicValid && formCurrentState.maxPercent && formCurrentState.percent;
+    return isBasicValid && formCurrentState.percent;
   }, [formCurrentState]);
   return { values: { control, formCurrentState, isTableVisible } };
 };
@@ -43,7 +44,7 @@ const SelectAfter = ({ control }: { control: Control<IForm, any> }) => (
   />
 );
 
-const CalcPenaltyByContractView = (props: ReturnType<typeof useCalcPenaltyByContract>) => {
+const CalcPenaltyByLoanContractView = (props: ReturnType<typeof useCalcPenaltyByLoanContract>) => {
   const { values: { control, formCurrentState, isTableVisible } } = props;
 
   return (
@@ -91,28 +92,17 @@ const CalcPenaltyByContractView = (props: ReturnType<typeof useCalcPenaltyByCont
             </Label>
           )}
         />
-        <Controller
-          name="maxPercent"
-          defaultValue={100}
-          control={control}
-          render={({ field: { onChange, value } }) => (
-            <Label isRow label="&nbsp;" style={{ width: '350px' }}>
-              <span className={css.percentText}>но не боллее</span>
-              <InputNumber value={value} style={{ width: '150px' }} className={css.maxPercentRubles} prefix="%" onChange={onChange} />
-            </Label>
-          )}
-        />
       </div>
-      {isTableVisible && (
-        <CalcPenaltyContractTable
+      {/*      {isTableVisible && (
+        <CalcLoanPenaltyTable
           tableData={{ ...formCurrentState }}
         />
-      )}
+      )} */}
     </form>
   );
 };
 
 export default () => {
-  const behavior = useCalcPenaltyByContract();
-  return <CalcPenaltyByContractView {...behavior} />;
+  const behavior = useCalcPenaltyByLoanContract();
+  return <CalcPenaltyByLoanContractView {...behavior} />;
 };

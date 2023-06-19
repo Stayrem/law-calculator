@@ -12,3 +12,9 @@ export const KEY_RATE_SHARE = [
   { value: 150, label: '1/150' },
   { value: 130, label: '1/130' },
 ] as const;
+
+export const CALC_CONTRACT_PERIOD_OPTIONS = [
+  { label: 'в день', value: 'day' },
+  { label: 'в месяц', value: 'month' },
+  { label: 'в год', value: 'year' },
+] as const;

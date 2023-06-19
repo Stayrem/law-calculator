@@ -34,7 +34,7 @@ const useCalcBy395 = (props: Props) => {
 const CalcBy365View = (props: ReturnType<typeof useCalcBy395>) => {
   const {
     values: {
-      rates, calcType, control, formCurrentState, isTableVisible,
+      rates, control, formCurrentState, isTableVisible,
     },
   } = props;
   return (

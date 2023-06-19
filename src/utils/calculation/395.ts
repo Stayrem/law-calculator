@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { CalcTypes, ListItem, RateItem } from '../../features/calculators/types';
+import { ListItem, RateItem } from '../../features/calculators/types';
+import { calculateDuration, getYearDays, calculatePenalty } from '../utils';
 
 export type MergedListItem = ListItem & {
   startDate: Dayjs;
@@ -14,49 +15,77 @@ export type MergedListItem = ListItem & {
   title?: string;
 }
 
-function calculatePenalty(amount: number, days: number, interestRate: number) {
-  const dailyInterestRate = interestRate / 100 / 365;
-  return amount * dailyInterestRate * days;
-}
-
 const listTypesDict: Record<MergedListItem['type'], MergedListItem['type']> = {
   debt: 'debt', payment: 'payment', debtInfo: 'debtInfo', paymentInfo: 'paymentInfo',
 };
 
 function findRateForDate(rates: RateItem[], date: Dayjs): number | null {
-  for (let i = 0; i < rates.length - 1; i += 1) {
-    if (date.unix() >= rates[i].timestamp && date.unix() < rates[i + 1].timestamp) {
+  for (let i = rates.length - 1; i >= 0; i -= 1) {
+    if (i === 0) {
+      return rates[i].rate;
+    }
+    if (date.unix() > rates[i].timestamp && date.unix() < rates[i - 1].timestamp) {
       return rates[i].rate;
     }
   }
-
-  if (date.unix() >= rates[rates.length - 1].timestamp) {
-    return rates[rates.length - 1].rate;
-  }
-
-  if (date.unix() < rates[0].timestamp) {
-    return rates[0].rate;
-  }
-
   return null;
 }
 
-function calculateDuration(date1: dayjs.Dayjs, date2: dayjs.Dayjs): number {
-  const duration = Math.abs(date1.diff(date2, 'day'));
-  return Math.round(duration);
-}
-
 const findNextRateChange = (r: RateItem[], startDate: number, endDate: number): RateItem | null => {
-  // eslint-disable-next-line no-restricted-syntax
-  for (const rate of r) {
-    if (rate.timestamp > startDate && rate.timestamp < endDate) {
-      return rate;
+  for (let i = r.length - 1; i >= 0; i -= 1) {
+    if (r[i].timestamp > startDate && r[i].timestamp < endDate) {
+      return r[i];
     }
   }
   return null;
 };
 
-const getYearDays = (date: Dayjs): 365 | 366 => (date.year() % 4 === 0 ? 366 : 365);
+const processYearChange = (extendedList: MergedListItem[]) => {
+  const result: MergedListItem[] = [];
+  for (let i = 0; i < extendedList.length; i += 1) {
+    const startYear = extendedList[i].startDate?.year();
+    const endYear = extendedList[i].endDate?.year();
+    if (startYear && endYear && startYear !== endYear) {
+      const currentYearChangeDate = dayjs(`${extendedList[i].startDate.year()}-12-31`, 'YYYY-MM-DD');
+      const currentDuration = calculateDuration(extendedList[i].startDate, currentYearChangeDate) + 1;
+
+      const nextYearChangeDate = dayjs(`${extendedList[i].endDate.year()}-01-01`, 'YYYY-MM-DD');
+      const nextDuration = calculateDuration(nextYearChangeDate, extendedList[i].endDate) + 1;
+
+      const currentItem: MergedListItem = {
+        ...extendedList[i],
+        endDate: currentYearChangeDate,
+        penny: calculatePenalty({
+          amount: extendedList[i].amount,
+          interestRate: extendedList[i].rate,
+          daysInYear: getYearDays(extendedList[i].startDate),
+          days: extendedList[i].duration,
+          interestPeriod: 'year',
+        }),
+        formula: `${extendedList[i].amount} x ${currentDuration} x ${extendedList[i].rate} / ${getYearDays(currentYearChangeDate)}`,
+        duration: currentDuration,
+      };
+      const nextItem: MergedListItem = {
+        ...extendedList[i],
+        startDate: nextYearChangeDate,
+        penny: calculatePenalty({
+          amount: extendedList[i].amount,
+          interestRate: extendedList[i].rate,
+          daysInYear: getYearDays(extendedList[i].startDate),
+          days: extendedList[i].duration,
+          interestPeriod: 'year',
+        }),
+        formula: `${extendedList[i].amount} x ${nextDuration} x ${extendedList[i].rate} / ${getYearDays(nextYearChangeDate)}`,
+        duration: nextDuration,
+      };
+      result.push(currentItem);
+      result.push(nextItem);
+    } else {
+      result.push(extendedList[i]);
+    }
+  }
+  return result;
+};
 
 function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): void {
   for (let i = 0; i < extendedList.length; i += 1) {
@@ -71,19 +100,22 @@ function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): 
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const nextRateChange = findNextRateChange(rates, currentDate.unix(), endDate.unix());
-      const nextYearChange = currentDate.year() !== endDate.year() ? dayjs(`${endDate.year()}-01-01`, 'YYYY-MM-DD') : null;
 
-      if (nextRateChange || nextYearChange) {
-        const rateChangeDate = nextRateChange
-          ? dayjs.unix(nextRateChange.timestamp)
-          : nextYearChange;
-        const rate = nextRateChange ? nextRateChange.rate : extendedList[i].rate;
-        const duration = calculateDuration(rateChangeDate, extendedList[i].endDate);
+      if (nextRateChange) {
+        const rateChangeDate = dayjs.unix(nextRateChange.timestamp);
+        const { rate } = nextRateChange;
+        const duration = calculateDuration(rateChangeDate, extendedList[i].endDate) + 1;
         const newItem: MergedListItem = {
           ...extendedList[i],
           startDate: rateChangeDate,
           endDate: extendedList[i].endDate,
-          penny: calculatePenalty(extendedList[i].amount, rate, duration),
+          penny: calculatePenalty({
+            amount: extendedList[i].amount,
+            interestRate: rate,
+            daysInYear: getYearDays(rateChangeDate),
+            days: duration,
+            interestPeriod: 'year',
+          }),
           formula: `${extendedList[i].amount} x ${duration} x ${rate} / ${getYearDays(rateChangeDate)}`,
           rate,
           duration,
@@ -92,7 +124,7 @@ function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): 
         // eslint-disable-next-line no-param-reassign
         extendedList[i].endDate = rateChangeDate.subtract(1, 'day');
         // eslint-disable-next-line no-param-reassign
-        extendedList[i].duration = calculateDuration(currentDate, rateChangeDate);
+        extendedList[i].duration = calculateDuration(currentDate, rateChangeDate) + 1;
         // eslint-disable-next-line no-param-reassign
         extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${rate} / ${getYearDays(rateChangeDate)}`;
 
@@ -190,15 +222,21 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
       extendedList[i].endDate = endDate;
     }
     extendedList[i].duration = nextDate
-      ? calculateDuration(currentDate, nextDate)
-      : calculateDuration(currentDate, endDate);
+      ? calculateDuration(currentDate, nextDate) + 1
+      : calculateDuration(currentDate, endDate) + 1;
     extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${extendedList[i].rate.toFixed(2)} / ${getYearDays(currentDate)}`;
     extendedList[i].penny = extendedList[i].duration
-      ? calculatePenalty(extendedList[i].amount, extendedList[i].rate, extendedList[i].duration)
+      ? calculatePenalty({
+        amount: extendedList[i].amount,
+        interestRate: extendedList[i].rate,
+        daysInYear: getYearDays(extendedList[i].startDate),
+        days: extendedList[i].duration,
+        interestPeriod: 'year',
+      })
       : null;
   }
 
   processRateChanges(extendedList, rates);
 
-  return extendedList;
+  return processYearChange(extendedList);
 }
