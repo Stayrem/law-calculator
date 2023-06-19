@@ -20,6 +20,9 @@ module.exports = {
     historyApiFallback: true,
     compress: true,
     port: 9000,
+    proxy: {
+      '/api': 'http://localhost:3000',
+    },
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -87,7 +90,12 @@ module.exports = {
     ],
   },
   plugins: [
-    new AntdDayjsWebpackPlugin(),
+    // new AntdDayjsWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, './src/static'), to: 'dist' },
+      ],
+    }),
     new HtmlWebpackPlugin({
       title: 'Web App',
       template: path.resolve(__dirname, './src/template/index.html'),

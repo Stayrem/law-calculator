@@ -1,29 +1,42 @@
 import React from 'react';
-import { Moment } from 'moment';
 import { useForm, Controller } from 'react-hook-form';
-import { DatePicker, Button } from 'antd';
+import { Dayjs } from 'dayjs';
+import { useSelector } from 'react-redux';
+import DatePicker from '../../../../../components/DatePicker/DatePicker';
 import Label from '../../../../../components/Label/Label';
 import DynamicTable from '../../DynamicTable/DynamicTable';
 import css from './CalcBy395.module.scss';
 import { dateFormat } from '../../../../../constants';
+import { CalcPenaltyTable } from '../CalcPenaltyTable/CalcPenaltyTable';
+import { CalcTypes, ListItem } from '../../../types';
+import { disabledDebtPaymentDate, disabledEndDate, getIsTableVisible } from '../../../utils';
+import { RootStore } from '../../../../../store/rootReducer';
 
-interface IForm {
-  endDate: string;
-  percent: number;
-  maxPercent: number;
-  debtList: { id: number; sum: number; date: number }[];
-  creditList: { id: number; sum: number; date: number }[];
+interface Props {
+  calcType: CalcTypes;
 }
-
-const useCalcBy395 = () => {
-  const { control, handleSubmit } = useForm<IForm>();
-  const onSubmit = handleSubmit((params) => console.log(params));
-  return { values: { control }, operations: { handleSubmit: onSubmit } };
+export interface IForm {
+  endDate: Dayjs | null;
+  debtList: ListItem[];
+  paymentsList: ListItem[];
+}
+const useCalcBy395 = (props: Props) => {
+  const { control, watch } = useForm<IForm>();
+  const formCurrentState = watch() as IForm;
+  const rates = useSelector((store: RootStore) => store.default.calculators.rates.ratesList);
+  const isTableVisible = getIsTableVisible(formCurrentState);
+  return {
+    values: {
+      calcType: props.calcType, control, formCurrentState, rates, isTableVisible,
+    },
+  };
 };
-
 const CalcBy365View = (props: ReturnType<typeof useCalcBy395>) => {
-  const { values: { control }, operations: { handleSubmit } } = props;
-
+  const {
+    values: {
+      rates, control, formCurrentState, isTableVisible,
+    },
+  } = props;
   return (
     <form>
       <div className={css.formRow}>
@@ -32,7 +45,11 @@ const CalcBy365View = (props: ReturnType<typeof useCalcBy395>) => {
           control={control}
           render={({ field: { onChange } }) => (
             <Label label="Конечная дата просрочки">
-              <DatePicker format={dateFormat} onChange={(val: Moment) => onChange(val.unix())} />
+              <DatePicker
+                disabledDate={disabledEndDate(formCurrentState.debtList)}
+                format={dateFormat}
+                onChange={(val) => onChange(val)}
+              />
             </Label>
           )}
         />
@@ -42,23 +59,27 @@ const CalcBy365View = (props: ReturnType<typeof useCalcBy395>) => {
           name="debtList"
           control={control}
           render={({ field: { onChange } }) => (
-            <DynamicTable onChange={onChange} label="Возникновение задолжности" />
+            <DynamicTable disabledDate={disabledDebtPaymentDate(formCurrentState.endDate)} onChange={onChange} label="Возникновение задолжности" />
           )}
         />
         <Controller
-          name="creditList"
+          name="paymentsList"
           control={control}
           render={({ field: { onChange } }) => (
-            <DynamicTable onChange={onChange} label="Частичная оплата задолжности" />
+            <DynamicTable disabledDate={disabledDebtPaymentDate(formCurrentState.endDate)} onChange={onChange} label="Частичная оплата задолжности" />
           )}
         />
       </div>
-      <Button className={css.submitButton} type="primary" onClick={handleSubmit}>Рассчитать</Button>
+      {isTableVisible && (
+        <CalcPenaltyTable
+          tableData={{ ...formCurrentState, rates }}
+        />
+      )}
     </form>
   );
 };
 
-export default () => {
-  const behavior = useCalcBy395();
+export default (props: Props) => {
+  const behavior = useCalcBy395(props);
   return <CalcBy365View {...behavior} />;
 };

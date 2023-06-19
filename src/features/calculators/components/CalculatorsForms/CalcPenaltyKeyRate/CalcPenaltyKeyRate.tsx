@@ -1,35 +1,69 @@
-import React from 'react';
-import { Moment } from 'moment';
+import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { DatePicker, Button, Select } from 'antd';
+import { Select } from 'antd';
+import { useSelector } from 'react-redux';
+import { Dayjs } from 'dayjs';
+import DatePicker from '../../../../../components/DatePicker/DatePicker';
 import Label from '../../../../../components/Label/Label';
 import DynamicTable from '../../DynamicTable/DynamicTable';
 import css from './CalcPenaltyKeyRate.module.scss';
 import { dateFormat } from '../../../../../constants';
-import { KeyRates } from '../types';
-
-const { Option } = Select;
+import { KEY_RATE_SELECT, KEY_RATE_SHARE } from '../../../constants';
+import { disabledDebtPaymentDate, disabledEndDate, getIsTableVisible } from '../../../utils';
+import { CalcPenaltyTable } from '../CalcPenaltyTable/CalcPenaltyTable';
+import { RootStore } from '../../../../../store/rootReducer';
+import { ListItem, KeyRateValue } from '../../../types';
 
 interface IForm {
-  endDate: string;
-  percent: number;
-  maxPercent: number;
-  debtList: { id: number; sum: number; date: number }[];
-  creditList: { id: number; sum: number; date: number }[];
-  keyRate: KeyRates;
-  keyRateDate: number;
-  keyRateShare: string;
+  endDate: Dayjs | null;
+  debtList: ListItem[];
+  paymentsList: ListItem[];
+  keyRateType: KeyRateValue;
+  keyRateDate: Dayjs | undefined;
+  keyRateShare: 300 | 150 | 130;
 }
 
 const useCalcPenaltyKeyRate = () => {
-  const { control, handleSubmit } = useForm<IForm>();
-  const onSubmit = handleSubmit((params) => console.log(params));
-  return { values: { control }, operations: { handleSubmit: onSubmit } };
+  const { control, watch } = useForm<IForm>();
+  const formCurrentState = watch() as IForm;
+  const rates = useSelector((store: RootStore) => store.default.calculators.rates.ratesList);
+  const targetRates = useMemo(() => {
+    if (formCurrentState.keyRateType === 'byPeriodsOfValidityOfTheRate' || formCurrentState.keyRateDate) {
+      return rates.map((it) => ({ ...it, rate: it.rate / formCurrentState.keyRateShare }));
+    }
+    const targetRate = { timestamp: 0, rate: 0 };
+    if (formCurrentState?.keyRateDate) {
+      const targetRateDateUnix = formCurrentState.keyRateDate.unix();
+      for (let i = 0; i < rates.length; i += 1) {
+        if (rates[i].timestamp < targetRateDateUnix && rates[i + 1].timestamp) {
+          targetRate.rate = rates[i].rate / formCurrentState.keyRateShare;
+          break;
+        }
+      }
+    }
+
+    return [targetRate];
+  }, [formCurrentState.keyRateType, formCurrentState.keyRateDate, formCurrentState.keyRateShare]);
+  const isTableVisible = useMemo(() => {
+    const isBasicValid = getIsTableVisible(formCurrentState);
+    if (formCurrentState.keyRateType === 'byPeriodsOfValidityOfTheRate') {
+      return isBasicValid;
+    }
+    return isBasicValid && formCurrentState.keyRateDate && formCurrentState.keyRateDate.isValid();
+  }, [formCurrentState]);
+  return {
+    values: {
+      control, formCurrentState, targetRates, isTableVisible,
+    },
+  };
 };
 
 const CalcPenaltyKeyRateView = (props: ReturnType<typeof useCalcPenaltyKeyRate>) => {
-  const { values: { control }, operations: { handleSubmit } } = props;
-
+  const {
+    values: {
+      control, formCurrentState, isTableVisible, targetRates,
+    },
+  } = props;
   return (
     <form>
       <div className={css.formRow}>
@@ -38,7 +72,11 @@ const CalcPenaltyKeyRateView = (props: ReturnType<typeof useCalcPenaltyKeyRate>)
           control={control}
           render={({ field: { onChange } }) => (
             <Label label="Конечная дата просрочки">
-              <DatePicker format={dateFormat} onChange={(val: Moment) => onChange(val.unix())} />
+              <DatePicker
+                disabledDate={disabledEndDate(formCurrentState.debtList)}
+                format={dateFormat}
+                onChange={(val) => onChange(val)}
+              />
             </Label>
           )}
         />
@@ -48,32 +86,30 @@ const CalcPenaltyKeyRateView = (props: ReturnType<typeof useCalcPenaltyKeyRate>)
           name="debtList"
           control={control}
           render={({ field: { onChange } }) => (
-            <DynamicTable onChange={onChange} label="Возникновение задолжности" />
+            <DynamicTable disabledDate={disabledDebtPaymentDate(formCurrentState.endDate)} onChange={onChange} label="Возникновение задолжности" />
           )}
         />
         <Controller
-          name="creditList"
+          name="paymentsList"
           control={control}
           render={({ field: { onChange } }) => (
-            <DynamicTable onChange={onChange} label="Частичная оплата задолжности" />
+            <DynamicTable disabledDate={disabledDebtPaymentDate(formCurrentState.endDate)} onChange={onChange} label="Частичная оплата задолжности" />
           )}
         />
       </div>
       <div className={css.formRow}>
 
         <Controller
-          name="keyRate"
+          name="keyRateType"
           control={control}
+          defaultValue={KEY_RATE_SELECT[0].value}
           render={({ field: { onChange } }) => (
             <Label label="Ключевая ставка" style={{ width: '290px' }}>
               <Select
+                options={KEY_RATE_SELECT as any}
                 onChange={onChange}
-              >
-                <Option value="на день наступления обязательств">на день наступления обязательств</Option>
-                <Option value="на день фактической оплаты">на день фактической оплаты</Option>
-                <Option value="по рериодам действия ставки">по рериодам действия ставки</Option>
-                <Option value="на день подачи иска в суд">на день подачи иска в суд</Option>
-              </Select>
+                defaultValue={KEY_RATE_SELECT[0].value}
+              />
             </Label>
           )}
         />
@@ -82,7 +118,7 @@ const CalcPenaltyKeyRateView = (props: ReturnType<typeof useCalcPenaltyKeyRate>)
           control={control}
           render={({ field: { onChange } }) => (
             <Label label="&nbsp;" style={{ width: '150px' }}>
-              <DatePicker onChange={onChange} format={dateFormat} />
+              <DatePicker disabled={formCurrentState.keyRateType === 'byPeriodsOfValidityOfTheRate' || !formCurrentState.keyRateType} onChange={onChange} format={dateFormat} />
             </Label>
           )}
         />
@@ -90,19 +126,22 @@ const CalcPenaltyKeyRateView = (props: ReturnType<typeof useCalcPenaltyKeyRate>)
       <Controller
         name="keyRateShare"
         control={control}
+        defaultValue={KEY_RATE_SHARE[0].value}
         render={({ field: { onChange } }) => (
           <Label label="Доля от ключевой ставки" style={{ width: '290px' }}>
             <Select
               onChange={onChange}
-            >
-              <Option value="1/300">1/300</Option>
-              <Option value="1/150">1/150</Option>
-              <Option value="1/130">1/130</Option>
-            </Select>
+              options={KEY_RATE_SHARE as any}
+              defaultValue={KEY_RATE_SHARE[0]}
+            />
           </Label>
         )}
       />
-      <Button className={css.submitButton} type="primary" onClick={handleSubmit}>Рассчитать</Button>
+      {isTableVisible && (
+        <CalcPenaltyTable
+          tableData={{ ...formCurrentState, rates: targetRates }}
+        />
+      )}
     </form>
   );
 };

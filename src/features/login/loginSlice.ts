@@ -5,14 +5,8 @@ import { LoadingStatus } from '../../app/enums';
 import { fetchRates, fetchReportPercentByContract } from '../../api/api';
 import { RateItem } from './types';
 
-interface ICalculatorsStore {
-  calcPercentByContract: {
-    fetchStatus: LoadingStatus
-  }
-  rates: {
-    status: LoadingStatus;
-    ratesList: RateItem[];
-  }
+interface IAuthStore {
+
 }
 
 const initialState: ICalculatorsStore = {

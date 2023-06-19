@@ -9,18 +9,17 @@ import css from './CalculatorsList.scss';
 const CalculatorsList = () => {
   const calculatorsList = Object.entries(calcConfigs);
   return (
-    <Row gutter={16}>
+    <div>
+
       {calculatorsList.map((it) => (
-        <Col span={24} lg={12} xl={8} key={it[0]}>
-          <Link className={css.cardLink} to={pathDict.getCalculatorById(it[0]).pathname}>
-            <Card title={it[1].title} bordered>
-              Card content
-            </Card>
-          </Link>
-        </Col>
+        <Link key={it[0]} className={css.cardLink} to={pathDict.getCalculatorById(it[0]).pathname}>
+          <Card title={it[1].title} bordered>
+            {it[1].description}
+          </Card>
+        </Link>
 
       ))}
-    </Row>
+    </div>
   );
 };
 

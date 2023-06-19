@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
-import { Button, Input, DatePicker } from 'antd';
+import { Button, Input } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
+import { RangePickerProps } from 'antd/es/date-picker';
+import dayjs, { Dayjs } from 'dayjs';
 import css from './DynamicTable.scss';
 import Label from '../../../../components/Label/Label';
 import { dateFormat } from '../../../../constants';
+import DatePicker from '../../../../components/DatePicker/DatePicker';
 
 interface IState {
   id: number;
   sum: number;
-  date: number;
+  date: Dayjs | null;
 }
 
 interface IProps {
   label: string;
   onChange: Function;
+  // eslint-disable-next-line no-unused-vars
+  disabledDate: (date: Dayjs) => boolean;
 }
 
-type inputChangeArgs = { id: number; inputSum?: number; inputDate?: number };
+type inputChangeArgs = { id: number; inputSum?: number; inputDate?: Dayjs; };
 
 const initialState: IState[] = [];
 
 const DynamicTable = (props: IProps) => {
   const [state, setState] = useState(initialState);
-  const { label, onChange } = props;
+  const { label, onChange, disabledDate } = props;
   const addItem = () => setState((prevState) => (
-    [...prevState, { id: state.length, sum: 0, date: 0 }]
+    [...prevState, { id: state.length, sum: 0, date: null }]
   ));
   const inputHandler = (params: inputChangeArgs) => {
     const { id, inputSum, inputDate } = params;
@@ -33,13 +38,13 @@ const DynamicTable = (props: IProps) => {
       const filteredState = state.filter((it) => it.id !== id);
       const payload = [...filteredState, { id, sum: inputSum, date }];
       onChange(payload);
-      setState(payload);
+      return setState(payload);
     }
     const { sum } = state.find((it) => it.id === id);
     const filteredState = state.filter((it) => it.id !== id);
     const payload = [...filteredState, { id, sum, date: inputDate }];
     onChange(payload);
-    setState(payload);
+    return setState(payload);
   };
   const itemDeleteHandler = (id: number) => {
     const payload = state.filter((it) => it.id !== id);
@@ -62,9 +67,10 @@ const DynamicTable = (props: IProps) => {
           </Label>
           <Label label={i === 0 ? 'Дата' : ''}>
             <DatePicker
+              disabledDate={disabledDate}
               format={dateFormat}
               placeholder="20-05-2022"
-              onChange={(evt) => inputHandler({ id: it.id, inputDate: evt.unix() })}
+              onChange={(evt) => inputHandler({ id: it.id, inputDate: dayjs.unix(evt.unix()) })}
             />
           </Label>
           <Button className={css.deleteButton} onClick={() => itemDeleteHandler(it.id)} shape="circle" icon={<CloseCircleOutlined />} />

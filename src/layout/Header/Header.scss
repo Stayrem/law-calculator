@@ -2,6 +2,16 @@
   display: flex;
 }
 
+.logoWrapper {
+  display: flex;
+}
+
 .logo {
   padding: 10px 0;
+}
+
+.logoText {
+  color: white;
+  font-size: 18px;
+  margin-left: 15px;
 }
