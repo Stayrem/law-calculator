@@ -1,6 +1,15 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { ListItem, RateItem } from '../../features/calculators/types';
-import { calculateDuration, getYearDays, calculatePenalty } from '../utils';
+import {
+  calculateDuration, calculatePenalty, findRateForDate, getYearDays,
+} from '../utils';
+
+type Props = {
+  debtList: ListItem[],
+  paymentsList?: ListItem[],
+  endDate: Dayjs,
+  rates: RateItem[],
+}
 
 export type MergedListItem = ListItem & {
   startDate: Dayjs;
@@ -19,18 +28,6 @@ const listTypesDict: Record<MergedListItem['type'], MergedListItem['type']> = {
   debt: 'debt', payment: 'payment', debtInfo: 'debtInfo', paymentInfo: 'paymentInfo',
 };
 
-function findRateForDate(rates: RateItem[], date: Dayjs): number | null {
-  for (let i = rates.length - 1; i >= 0; i -= 1) {
-    if (i === 0) {
-      return rates[i].rate;
-    }
-    if (date.unix() > rates[i].timestamp && date.unix() < rates[i - 1].timestamp) {
-      return rates[i].rate;
-    }
-  }
-  return null;
-}
-
 const findNextRateChange = (r: RateItem[], startDate: number, endDate: number): RateItem | null => {
   for (let i = r.length - 1; i >= 0; i -= 1) {
     if (r[i].timestamp > startDate && r[i].timestamp < endDate) {
@@ -47,36 +44,14 @@ const processYearChange = (extendedList: MergedListItem[]) => {
     const endYear = extendedList[i].endDate?.year();
     if (startYear && endYear && startYear !== endYear) {
       const currentYearChangeDate = dayjs(`${extendedList[i].startDate.year()}-12-31`, 'YYYY-MM-DD');
-      const currentDuration = calculateDuration(extendedList[i].startDate, currentYearChangeDate) + 1;
-
       const nextYearChangeDate = dayjs(`${extendedList[i].endDate.year()}-01-01`, 'YYYY-MM-DD');
-      const nextDuration = calculateDuration(nextYearChangeDate, extendedList[i].endDate) + 1;
-
       const currentItem: MergedListItem = {
         ...extendedList[i],
         endDate: currentYearChangeDate,
-        penny: calculatePenalty({
-          amount: extendedList[i].amount,
-          interestRate: extendedList[i].rate,
-          daysInYear: getYearDays(extendedList[i].startDate),
-          days: extendedList[i].duration,
-          interestPeriod: 'year',
-        }),
-        formula: `${extendedList[i].amount} x ${currentDuration} x ${extendedList[i].rate} / ${getYearDays(currentYearChangeDate)}`,
-        duration: currentDuration,
       };
       const nextItem: MergedListItem = {
         ...extendedList[i],
         startDate: nextYearChangeDate,
-        penny: calculatePenalty({
-          amount: extendedList[i].amount,
-          interestRate: extendedList[i].rate,
-          daysInYear: getYearDays(extendedList[i].startDate),
-          days: extendedList[i].duration,
-          interestPeriod: 'year',
-        }),
-        formula: `${extendedList[i].amount} x ${nextDuration} x ${extendedList[i].rate} / ${getYearDays(nextYearChangeDate)}`,
-        duration: nextDuration,
       };
       result.push(currentItem);
       result.push(nextItem);
@@ -86,6 +61,26 @@ const processYearChange = (extendedList: MergedListItem[]) => {
   }
   return result;
 };
+
+const processCalculation = (list: MergedListItem[], rates: RateItem[]) => list.map((it) => {
+  if (it.type === 'debt') {
+    const duration = calculateDuration(it.startDate, it.endDate) + 1;
+    const rate = findRateForDate(rates, it.startDate);
+    const daysInYear = getYearDays(it.startDate);
+    const formula = `${it.amount} x ${duration} x ${rate}% / ${daysInYear}`;
+    const penny = calculatePenalty({
+      amount: it.amount,
+      days: duration,
+      interestRate: rate,
+      interestPeriod: 'year',
+      daysInYear,
+    });
+    return {
+      ...it, duration, rate, formula, penny,
+    };
+  }
+  return it;
+});
 
 function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): void {
   for (let i = 0; i < extendedList.length; i += 1) {
@@ -103,31 +98,14 @@ function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): 
 
       if (nextRateChange) {
         const rateChangeDate = dayjs.unix(nextRateChange.timestamp);
-        const { rate } = nextRateChange;
-        const duration = calculateDuration(rateChangeDate, extendedList[i].endDate) + 1;
         const newItem: MergedListItem = {
           ...extendedList[i],
           startDate: rateChangeDate,
           endDate: extendedList[i].endDate,
-          penny: calculatePenalty({
-            amount: extendedList[i].amount,
-            interestRate: rate,
-            daysInYear: getYearDays(rateChangeDate),
-            days: duration,
-            interestPeriod: 'year',
-          }),
-          formula: `${extendedList[i].amount} x ${duration} x ${rate} / ${getYearDays(rateChangeDate)}`,
-          rate,
-          duration,
         };
 
         // eslint-disable-next-line no-param-reassign
         extendedList[i].endDate = rateChangeDate.subtract(1, 'day');
-        // eslint-disable-next-line no-param-reassign
-        extendedList[i].duration = calculateDuration(currentDate, rateChangeDate) + 1;
-        // eslint-disable-next-line no-param-reassign
-        extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${rate} / ${getYearDays(rateChangeDate)}`;
-
         extendedList.splice(i + 1, 0, newItem);
         i += 1;
 
@@ -137,13 +115,6 @@ function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): 
       }
     }
   }
-}
-
-type Props = {
-  debtList: ListItem[],
-  paymentsList?: ListItem[],
-  endDate: Dayjs,
-  rates: RateItem[],
 }
 
 export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
@@ -192,7 +163,6 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
         date: mergedList[i].startDate,
       });
     }
-
     if (mergedList[i].type === 'debt' || mergedList[i].type === 'payment') {
       mergedList[i].amount = i === 0
         ? mergedList[i].sum
@@ -207,7 +177,6 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
       continue;
     }
 
-    const currentDate = dayjs(extendedList[i].date, 'DD.MM.YYYY');
     let nextDate: dayjs.Dayjs | null;
 
     if (i < extendedList.length - 1) {
@@ -219,23 +188,9 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
       nextDate = endDate;
       extendedList[i].endDate = endDate;
     }
-    mergedList[i].rate = findRateForDate(rates, mergedList[i].date);
-    extendedList[i].duration = nextDate
-      ? calculateDuration(currentDate, nextDate) + 1
-      : calculateDuration(currentDate, endDate) + 1;
-    extendedList[i].formula = `${extendedList[i].amount} x ${extendedList[i].duration} x ${extendedList[i].rate.toFixed(2)}% / ${getYearDays(currentDate)}`;
-    extendedList[i].penny = extendedList[i].duration
-      ? calculatePenalty({
-        amount: extendedList[i].amount,
-        interestRate: extendedList[i].rate,
-        daysInYear: getYearDays(extendedList[i].startDate),
-        days: extendedList[i].duration,
-        interestPeriod: 'year',
-      })
-      : null;
+    extendedList[i].rate = findRateForDate(rates, extendedList[i].startDate);
   }
-
   processRateChanges(extendedList, rates);
-
-  return processYearChange(extendedList);
+  const listSplitByYear = processYearChange(extendedList);
+  return processCalculation(listSplitByYear, rates);
 }

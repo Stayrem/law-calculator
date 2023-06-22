@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import dayjs, { Dayjs } from 'dayjs';
+import { RateItem } from '../features/calculators/types';
 
 const toCamel = (s) => s.replace(/([-_][a-z])/ig, ($1) => $1.toUpperCase()
   .replace('-', '')
@@ -29,8 +30,9 @@ export const keysToCamel = (o) => {
 export const disabledDate = (current) => current && current > dayjs(new Date());
 
 export const calculateDuration = (date1: dayjs.Dayjs, date2: dayjs.Dayjs): number => {
-  const duration = Math.abs(date1.diff(date2, 'day'));
-  return Math.round(duration);
+  const date1Round = date1.set('hours', 0).set('minutes', 0).set('seconds', 0).set('milliseconds', 0);
+  const date2Round = date2.set('hours', 0).set('minutes', 0).set('seconds', 0).set('milliseconds', 0);
+  return date2Round.diff(date1Round, 'day');
 };
 
 export const getYearDays = (date: Dayjs): 365 | 366 => (date.year() % 4 === 0 ? 366 : 365);
@@ -47,7 +49,7 @@ interface ICalcPenalty {
 export const calculatePenalty = (props: ICalcPenalty) => {
   const { daysInYear = 365 } = props;
   if (props.interestPeriod === 'year') {
-    return (props.amount * props.days * (props.interestRate / 100)) / props.daysInYear;
+    return +(props.amount * props.days * ((props.interestRate / 100) / daysInYear)).toFixed(2);
   }
   if (props.interestPeriod === 'day') {
     let totalAmount = props.amount;
@@ -58,3 +60,22 @@ export const calculatePenalty = (props: ICalcPenalty) => {
   }
   return 0;
 };
+
+export function findRateForDate(rates: RateItem[], date: Dayjs): number {
+  const ratesReversed = rates.slice().reverse();
+  let res = null;
+  for (let i = 0; i < ratesReversed.length; i += 1) {
+    const next = ratesReversed[i + 1];
+    const targetTimeStamp = date.set('hours', 0).set('minutes', 0).set('seconds', 0).set('milliseconds', 0)
+      .unix();
+    if (next && ratesReversed[i].timestamp <= targetTimeStamp && next.timestamp > targetTimeStamp) {
+      res = ratesReversed[i].rate;
+      break;
+    }
+    if (!next) {
+      res = ratesReversed[i].rate;
+      break;
+    }
+  }
+  return res;
+}

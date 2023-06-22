@@ -21,10 +21,18 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
   const getIsPaymentInfoOrDebtInfo = (colSpan: number) => (el: MergedListItem) => ({ colSpan: el.type === 'paymentInfo' || el.type === 'debtInfo' ? colSpan : 1 });
   const renderEndDate = (el: MergedListItem) => {
     if (el.type === 'paymentInfo' || el.type === 'debtInfo') {
-      return el.title;
+      return null;
     }
     return el.endDate.format(dateFormat);
   };
+
+  const renderStartDate = (el: MergedListItem) => {
+    if (el.type === 'paymentInfo' || el.type === 'debtInfo') {
+      return el.title;
+    }
+    return el.startDate.format(dateFormat);
+  };
+
   const renderAmount = (el: MergedListItem) => {
     if (el.type === 'paymentInfo') {
       return `-${el.amount}`;
@@ -34,6 +42,8 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
     }
     return el.amount;
   };
+
+  const renderDebtItemEl = (el: MergedListItem, key: 'duration' | 'penny' | 'rate' | 'formula') => (el.type === 'debt' ? el[key] : null);
   const dataSource = mergeAndSortDebtsAndPayments(tableData);
   return {
     values: {
@@ -44,6 +54,8 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
       getIsPaymentInfoOrDebtInfo,
       renderEndDate,
       renderAmount,
+      renderStartDate,
+      renderDebtItemEl,
     },
   };
 };
@@ -58,6 +70,8 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
       getIsPaymentInfoOrDebtInfo,
       renderEndDate,
       renderAmount,
+      renderStartDate,
+      renderDebtItemEl,
     },
   } = props;
   return (
@@ -72,13 +86,13 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
       <Table dataSource={dataSource} pagination={{ pageSize: Infinity, hideOnSinglePage: true }}>
         <Column render={renderAmount} title="Задолженность" key="amount" />
         <ColumnGroup title="Период просрочки">
-          <Column render={(it: MergedListItem) => it.startDate.format(dateFormat)} title="с" key="startDate" />
+          <Column render={renderStartDate} title="с" key="startDate" />
           <Column render={renderEndDate} onCell={getIsPaymentInfoOrDebtInfo(5)} title="по" key="endDate" />
-          <Column onCell={getIsPaymentInfoOrDebtInfo(0)} title="дней" dataIndex="duration" key="duration" />
+          <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'duration')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="дней" key="duration" />
         </ColumnGroup>
-        <Column render={(it: MergedListItem) => (it.rate ? it.rate.toFixed(2) : null)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Ставка" key="rate" />
-        <Column onCell={getIsPaymentInfoOrDebtInfo(0)} title="Формула" dataIndex="formula" key="formula" />
-        <Column render={(it: MergedListItem) => (it.penny ? it.penny.toFixed(2) : null)} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Неустойка" key="penny" />
+        <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'rate')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Ставка" key="rate" />
+        <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'formula')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Формула" key="formula" />
+        <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'penny')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Неустойка" key="penny" />
       </Table>
       <Descriptions
         bordered

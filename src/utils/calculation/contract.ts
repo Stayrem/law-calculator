@@ -1,5 +1,5 @@
 import { Dayjs } from 'dayjs';
-import { ListItem, RateItem } from '../../features/calculators/types';
+import { ListItem } from '../../features/calculators/types';
 import { MergedListItem } from './395';
 import { calculateDuration, calculatePenalty, getYearDays } from '../utils';
 

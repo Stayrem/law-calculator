@@ -4,7 +4,6 @@ import {
   Table,
 } from 'antd';
 
-import css from './CalcPenaltyTable.scss';
 import { mergeAndSortDebtsAndPayments, MergedListItem } from '../../../../../utils/calculation/395';
 import { RateItem } from '../../../types';
 import { IForm } from '../../CalculatorsForms/CalcBy395/CalcBy395';
@@ -61,7 +60,7 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
     },
   } = props;
   return (
-    <div className={css.wrapper}>
+    <div>
       <Descriptions
         bordered
         size="small"
