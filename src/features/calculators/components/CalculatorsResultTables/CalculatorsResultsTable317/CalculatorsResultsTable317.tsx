@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Descriptions,
   Table,
 } from 'antd';
 
-import css from './CalcPenaltyTable.scss';
 import { mergeAndSortDebtsAndPayments, MergedListItem } from '../../../../../utils/calculation/395';
 import { RateItem } from '../../../types';
-import { IForm } from '../CalcBy395/CalcBy395';
+import { IForm } from '../../CalculatorsForms/CalcBy317/CalcBy317';
 import { dateFormat } from '../../../../../constants';
 
 const { Column, ColumnGroup } = Table;
@@ -16,7 +15,8 @@ export interface ICalcPenaltyByContract {
   tableData: IForm & { rates: RateItem[] };
 }
 
-const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
+const useCalcPenalty317Table = (props: ICalcPenaltyByContract) => {
+  const [pennySum, changePennySum] = useState(0);
   const { tableData } = props;
   const getIsPaymentInfoOrDebtInfo = (colSpan: number) => (el: MergedListItem) => ({ colSpan: el.type === 'paymentInfo' || el.type === 'debtInfo' ? colSpan : 1 });
   const renderEndDate = (el: MergedListItem) => {
@@ -45,6 +45,16 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
 
   const renderDebtItemEl = (el: MergedListItem, key: 'duration' | 'penny' | 'rate' | 'formula') => (el.type === 'debt'
   || el.type === 'payment' ? el[key] : null);
+
+  const renderPenny = (el: MergedListItem) => {
+    if (el.type === 'debt' || el.type === 'payment') {
+      return `+${el.penny}`;
+    }
+    if (el.type === 'paymentInfo') {
+
+    }
+  };
+
   const dataSource = mergeAndSortDebtsAndPayments(tableData);
   return {
     values: {
@@ -61,7 +71,7 @@ const useCalcPenaltyTable = (props: ICalcPenaltyByContract) => {
   };
 };
 
-const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => {
+const CalcPenalty317TableView = (props: ReturnType<typeof useCalcPenalty317Table>) => {
   const {
     values: {
       dataSource,
@@ -76,7 +86,7 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
     },
   } = props;
   return (
-    <div className={css.wrapper}>
+    <div>
       <Descriptions
         bordered
         size="small"
@@ -93,7 +103,7 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
         </ColumnGroup>
         <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'rate')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Ставка" key="rate" />
         <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'formula')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Формула" key="formula" />
-        <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'penny')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Неустойка" key="penny" />
+        <Column render={(el: MergedListItem) => renderDebtItemEl(el, 'penny')} onCell={getIsPaymentInfoOrDebtInfo(0)} title="Проценты за период" key="penny" />
       </Table>
       <Descriptions
         bordered
@@ -107,7 +117,7 @@ const CalcPenaltyTableView = (props: ReturnType<typeof useCalcPenaltyTable>) => 
   );
 };
 
-export const CalcPenaltyTable = (props: ICalcPenaltyByContract) => {
-  const behaviour = useCalcPenaltyTable(props);
-  return <CalcPenaltyTableView {...behaviour} />;
+export const CalcPenalty317Table = (props: ICalcPenaltyByContract) => {
+  const behaviour = useCalcPenalty317Table(props);
+  return <CalcPenalty317TableView {...behaviour} />;
 };

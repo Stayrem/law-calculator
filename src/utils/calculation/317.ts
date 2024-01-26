@@ -9,6 +9,7 @@ type Props = {
   paymentsList?: ListItem[],
   endDate: Dayjs,
   rates: RateItem[],
+  splitYears: boolean;
 }
 
 export type MergedListItem = ListItem & {
@@ -62,25 +63,30 @@ const processYearChange = (extendedList: MergedListItem[]) => {
   return result;
 };
 
-const processCalculation = (list: MergedListItem[], rates: RateItem[]) => list.map((it) => {
-  if (it.type === 'debt' || it.type === 'payment') {
-    const duration = calculateDuration(it.startDate, it.endDate) + 1;
-    const rate = findRateForDate(rates, it.startDate);
-    const daysInYear = getYearDays(it.startDate);
-    const formula = `${it.amount} x ${duration} x ${rate}% / ${daysInYear}`;
-    const penny = calculatePenalty({
-      amount: it.amount,
-      days: duration,
-      interestRate: rate,
-      interestPeriod: 'year',
-      daysInYear,
-    });
-    return {
-      ...it, duration, rate, formula, penny,
-    };
-  }
-  return it;
-});
+const processCalculation = (list: MergedListItem[], rates: RateItem[]) => {
+  let pennySum = 0;
+  const { amount } = list[0];
+  return list.map((it, i) => {
+    if (it.type === 'debt') {
+      const duration = calculateDuration(it.startDate, it.endDate) + 1;
+      const rate = findRateForDate(rates, it.startDate);
+      const daysInYear = getYearDays(it.startDate);
+      const formula = `${it.amount} x ${duration} x ${rate}% / ${daysInYear}`;
+      const penny = calculatePenalty({
+        amount: it.amount,
+        days: duration,
+        interestRate: rate,
+        interestPeriod: 'year',
+        daysInYear,
+      });
+      pennySum += penny;
+      return {
+        ...it, duration, rate, formula, penny, pennySum,
+      };
+    }
+    return it;
+  });
+};
 
 function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): void {
   for (let i = 0; i < extendedList.length; i += 1) {
@@ -119,7 +125,7 @@ function processRateChanges(extendedList: MergedListItem[], rates: RateItem[]): 
 
 export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
   const {
-    debtList, paymentsList, endDate, rates,
+    debtList, paymentsList, endDate, rates, splitYears,
   } = props;
   const mergedList: MergedListItem[] = debtList
     .map((item) => ({
@@ -191,6 +197,6 @@ export function mergeAndSortDebtsAndPayments(props: Props): MergedListItem[] {
     extendedList[i].rate = findRateForDate(rates, extendedList[i].startDate);
   }
   processRateChanges(extendedList, rates);
-  const listSplitByYear = processYearChange(extendedList);
+  const listSplitByYear = splitYears ? processYearChange(extendedList) : extendedList;
   return processCalculation(listSplitByYear, rates);
 }

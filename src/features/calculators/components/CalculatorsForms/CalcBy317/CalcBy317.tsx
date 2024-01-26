@@ -12,9 +12,10 @@ import { KEY_RATE_SELECT } from '../../../constants';
 import { disabledDebtPaymentDate, disabledEndDate, getIsTableVisible } from '../../../utils';
 import { ListItem, KeyRateValue } from '../../../types';
 import { RootStore } from '../../../../../store/rootReducer';
-import { CalcPenaltyTable } from '../CalcPenaltyTable/CalcPenaltyTable';
+import { findRateForDate } from '../../../../../utils/utils';
+import { CalcPenalty317Table } from '../../CalculatorsResultTables/CalculatorsResultsTable317/CalculatorsResultsTable317';
 
-interface IForm {
+export interface IForm {
   endDate: Dayjs | null;
   debtList: ListItem[];
   paymentsList: ListItem[];
@@ -27,21 +28,17 @@ const useCalcBy317 = () => {
   const formCurrentState = watch() as IForm;
   const rates = useSelector((store: RootStore) => store.default.calculators.rates.ratesList);
   const targetRates = useMemo(() => {
-    if (formCurrentState.keyRateType === 'byPeriodsOfValidityOfTheRate' || formCurrentState.keyRateDate) {
+    if (formCurrentState.keyRateType === 'byPeriodsOfValidityOfTheRate') {
       return rates;
     }
-    const targetRate = { timestamp: 0, rate: 0 };
-    if (formCurrentState?.keyRateDate) {
-      const targetRateDateUnix = formCurrentState.keyRateDate.unix();
-      for (let i = 0; i < rates.length; i += 1) {
-        if (rates[i].timestamp < targetRateDateUnix && rates[i + 1].timestamp) {
-          targetRate.rate = rates[i].rate;
-          break;
-        }
-      }
+    if (formCurrentState.keyRateDate) {
+      const targetRate = {
+        timestamp: formCurrentState.keyRateDate.unix(),
+        rate: findRateForDate(rates, formCurrentState.keyRateDate),
+      };
+      return [targetRate];
     }
-
-    return [targetRate];
+    return rates;
   }, [formCurrentState.keyRateType, formCurrentState.keyRateDate]);
   const isTableVisible = useMemo(() => {
     const isBasicValid = getIsTableVisible(formCurrentState);
@@ -124,7 +121,7 @@ const CalcBy317View = (props: ReturnType<typeof useCalcBy317>) => {
         />
       </div>
       {isTableVisible && (
-        <CalcPenaltyTable
+        <CalcPenalty317Table
           tableData={{ ...formCurrentState, rates: targetRates }}
         />
       )}
